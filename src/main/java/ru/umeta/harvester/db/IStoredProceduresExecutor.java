@@ -10,4 +10,7 @@ public interface IStoredProceduresExecutor {
 	 */
 	public abstract int activateQuery(int qid, int uid);
 
+    Boolean selectUser(String login);
+
+    Boolean addUser(String login, String password);
 }
