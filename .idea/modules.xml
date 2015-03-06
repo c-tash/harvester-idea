@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/harvester-idea.iml" filepath="$PROJECT_DIR$/harvester-idea.iml" />
+      <module fileurl="file://$PROJECT_DIR$/trash/trash.iml" filepath="$PROJECT_DIR$/trash/trash.iml" />
     </modules>
   </component>
 </project>

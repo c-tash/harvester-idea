@@ -1,6 +1,3 @@
-package ru.umeta.harvester.db;
-
-
 import ru.umeta.harvesting.base.model.Query;
 import ru.umeta.harvesting.base.wrap.ServiceMessage;
 

@@ -2,7 +2,6 @@ package ru.umeta.harvester.db;
 
 import java.sql.*;
 
-
 public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
     private final static String SQL_DRIVER_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
