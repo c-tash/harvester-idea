@@ -17,7 +17,7 @@ public class DBCheckQueryExistance implements DBProcedure{
 		    @eURL nvarchar(max),
 		    @sURL nvarchar(max),
 		    @pid int,
-		    @time datetime,
+		    @timer datetime,
 		    @reg int,
 		    @uid int,
 		    @sloc nvarchar(max)*/

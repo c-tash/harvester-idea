@@ -1,6 +1,5 @@
-package ru.umeta.harvester.timePackage;
+package ru.umeta.harvester.timer;
 
-import ru.umeta.harvester.db.StoredProceduresExecutor;
 import ru.umeta.harvester.model.HarvesterTask;
 import ru.umeta.harvester.services.IHarvesterTimerService;
 

@@ -1,7 +1,6 @@
 package ru.umeta.harvester.services;
 
 import ru.umeta.harvester.db.IStoredProceduresExecutor;
-import ru.umeta.harvester.timePackage.HarvesterTimer;
 //import xml.ErrorMessagesXMLParser;
 
 
@@ -93,7 +92,7 @@ public class HarvestingManagementService implements IHarvestingManagementService
 //            if (DBSelectQueryForId.dbConnect(Integer.parseInt(qr.id)) != null) {
 //                if (DBUpdateQuery
 //                    .dbConnect(Integer.parseInt(qr.id), qr.name, qr.endURL, qr.startURL,
-//                        qr.protocol_id, qr.time, qr.reg, qr.struct_loc)) {
+//                        qr.protocol_id, qr.timer, qr.reg, qr.struct_loc)) {
 //                    msg.code = 1;
 //                    msg.text = msgArr[msg.code];
 //                    return msg;
@@ -141,10 +140,10 @@ public class HarvestingManagementService implements IHarvestingManagementService
 //                return msg;
 //            }
 //            if (!DBCheckQueryExistance
-//                .dbConnect(qr.endURL, qr.startURL, qr.protocol_id, qr.time, qr.reg,
+//                .dbConnect(qr.endURL, qr.startURL, qr.protocol_id, qr.timer, qr.reg,
 //                    String.valueOf(uid.value), qr.struct_loc)) {
 //                query_id = DBAddQuery
-//                    .dbConnect(qr.name, qr.endURL, qr.startURL, qr.protocol_id, qr.time, qr.reg,
+//                    .dbConnect(qr.name, qr.endURL, qr.startURL, qr.protocol_id, qr.timer, qr.reg,
 //                        String.valueOf(uid.value), qr.struct_loc);
 //                if (query_id > 0) {
 //                    msg.code = 1;

@@ -1,4 +1,4 @@
-package ru.umeta.harvester.timePackage;
+package ru.umeta.harvester.timer;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,7 +1,7 @@
 package ru.umeta.harvester.services;
 
 import ru.umeta.harvester.db.StoredProceduresExecutor;
-import ru.umeta.harvester.timePackage.HarvesterTimer;
+import ru.umeta.harvester.timer.HarvesterTimer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

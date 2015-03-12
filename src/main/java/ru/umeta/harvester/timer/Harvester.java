@@ -1,4 +1,4 @@
-package ru.umeta.harvester.timePackage;
+package ru.umeta.harvester.timer;
 
 
 public class Harvester implements Runnable {
