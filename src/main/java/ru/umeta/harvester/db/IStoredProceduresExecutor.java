@@ -1,5 +1,7 @@
 package ru.umeta.harvester.db;
 
+import ru.umeta.harvester.model.HarvesterTask;
+
 public interface IStoredProceduresExecutor {
 
 	/**
@@ -8,9 +10,11 @@ public interface IStoredProceduresExecutor {
 	 * @param uid User id
 	 * @return status of the execution
 	 */
-	public abstract int activateQuery(int qid, int uid);
+	int activateQuery(int qid, int uid);
 
     Boolean selectUser(String login);
 
     Boolean addUser(String login, String password);
+
+    HarvesterTask checkNextHarvest();
 }

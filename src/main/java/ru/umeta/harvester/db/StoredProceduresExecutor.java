@@ -1,5 +1,7 @@
 package ru.umeta.harvester.db;
 
+import ru.umeta.harvester.model.HarvesterTask;
+
 import java.sql.*;
 
 public class StoredProceduresExecutor implements IStoredProceduresExecutor {
@@ -11,7 +13,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     private final static String SQL_DB_PASS = "QueryLogin";
     private static final String EXEC_ACTIVATE_QUERY = "EXEC ActivateQuery @qid = ?, @uid = ?";
     private static final String EXEC_SELECT_USER = "EXEC SelectUser @lg = ?";
-    public static final String EXEC_ADD_USER = "exec AddUser @lg = ?, @pw = ?";
+    private static final String EXEC_ADD_USER = "exec AddUser @lg = ?, @pw = ?";
+    private static final String EXEC_CHECK_NEXT_SCHEDULE = "exec CheckNextSchedule";
 
     private Connection getConnection() throws SQLException {
         return DriverManager
@@ -44,9 +47,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_USER);
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
-            Boolean userExists = resultSet.next();
 
-            return userExists;
+            return resultSet.next();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,8 +56,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public Boolean addUser(String login, String password)
-    {
+    @Override public Boolean addUser(String login, String password) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_ADD_USER);
@@ -64,10 +65,34 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             return statement.execute();
 
         } catch (Exception e) {
-            System.err.println("DBAddUser. An error has occured");
             e.printStackTrace();
 
             return false;
         }
     }
+
+    @Override
+    public HarvesterTask checkNextHarvest() {
+        try (Connection conn = getConnection()) {
+
+            PreparedStatement statement = conn.prepareStatement(EXEC_CHECK_NEXT_SCHEDULE);
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next())
+                return null;
+
+            int queryId = resultSet.getInt("query_id");
+            int scheduleId = resultSet.getInt("id");
+            Date date = resultSet.getDate("datetime");
+
+            if (date == null)
+                throw new NullPointerException("\"" + EXEC_CHECK_NEXT_SCHEDULE + "\"" + " returned null date.");
+
+            return new HarvesterTask(date, scheduleId, queryId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }
