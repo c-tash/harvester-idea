@@ -1,6 +1,8 @@
 package ru.umeta.harvester.db;
 
 import ru.umeta.harvester.model.HarvesterTask;
+import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
 
 import java.sql.*;
 
@@ -13,8 +15,10 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     private final static String SQL_DB_PASS = "QueryLogin";
     private static final String EXEC_ACTIVATE_QUERY = "EXEC ActivateQuery @qid = ?, @uid = ?";
     private static final String EXEC_SELECT_USER = "EXEC SelectUser @lg = ?";
-    private static final String EXEC_ADD_USER = "exec AddUser @lg = ?, @pw = ?";
-    private static final String EXEC_CHECK_NEXT_SCHEDULE = "exec CheckNextSchedule";
+    private static final String EXEC_ADD_USER = "EXEC AddUser @lg = ?, @pw = ?";
+    private static final String EXEC_CHECK_NEXT_SCHEDULE = "EXEC CheckNextSchedule";
+    private static final String EXEC_SELECT_QUERY_FOR_ID = "EXEC SelectQueryForId @qid = ?";
+    private static final String EXEC_SELECT_PROTOCOL_FOR_ID = "EXEC SelectProtocolForId @pid = ?";
 
     private Connection getConnection() throws SQLException {
         return DriverManager
@@ -91,6 +95,70 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public Query selectQueryForId(int queryId) {
+        try (Connection conn = getConnection()) {
+
+            PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_QUERY_FOR_ID);
+            statement.setInt(1, queryId);
+            ResultSet resultSet = statement.executeQuery();
+            Query query;
+
+            if (resultSet.next()) {
+                query = new Query(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),
+                        resultSet.getString(6),resultSet.getString(7),resultSet.getString(8),resultSet.getString(9),resultSet.getString(10),resultSet.getString(11));
+            } else {
+                return null;
+            }
+
+            return query;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Protocol selectProtocolForId(int protocolId) {
+        try (Connection conn = getConnection()) {
+
+            PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_PROTOCOL_FOR_ID);
+            statement.setInt(1, protocolId);
+            ResultSet resultSet = statement.executeQuery();
+            Protocol protocol;
+
+            if (resultSet.next()) {
+                protocol = new Protocol(protocolId, resultSet.getString(2));
+                protocol.setClass_(resultSet.getString(3));
+                protocol.setPath(resultSet.getString(4));
+                protocol.setXml(resultSet.getString(5));
+            } else {
+                return null;
+            }
+            return protocol;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean updateScheduleStatus(int scheduleId, int statusId) {
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("exec UpdateStatusForSchedule @sid = ?, @status = ?");
+            statement.setInt(1, scheduleId);
+            statement.setInt(1, statusId);
+            int result = statement.executeUpdate();
+            if (result <= 0) {
+                throw Exception("The status update has not updated anything.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

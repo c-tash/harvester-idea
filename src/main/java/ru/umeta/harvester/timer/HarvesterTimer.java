@@ -1,7 +1,10 @@
 package ru.umeta.harvester.timer;
 
+import ru.umeta.harvester.db.IStoredProceduresExecutor;
 import ru.umeta.harvester.model.HarvesterTask;
 import ru.umeta.harvester.services.IHarvesterTimerService;
+import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
 
 import java.util.Date;
 import java.util.Timer;
@@ -44,17 +47,41 @@ public enum HarvesterTimer {
 
     private class HarvesterTimerTask extends TimerTask {
 
-        IHarvesterTimerService harvesterTimerService;
+        private final IStoredProceduresExecutor storedProceduresExecutor;
+        private final IHarvesterTimerService harvesterTimerService;
 
-        public HarvesterTimerTask(IHarvesterTimerService harvesterTimerService) {
+        public HarvesterTimerTask(IHarvesterTimerService harvesterTimerService, IStoredProceduresExecutor storedProceduresExecutor) {
             this.harvesterTimerService = harvesterTimerService;
+            this.storedProceduresExecutor = storedProceduresExecutor;
         }
 
         public void run() {
             System.out.println("The delay is " + (System.currentTimeMillis() - scheduledExecutionTime()));
             System.out.println("It's time for harvesting!");
-            Harvester nextHarv = new Harvester(scheduleId, queryId);
-            new Thread(nextHarv).start();
+            //Harvester nextHarv = new Harvester(scheduleId, queryId);
+            new Thread() {
+                public void run() {
+                    System.out.print("scheduleId = ");
+                    System.out.println(scheduleId);
+                    int statusId = 0;
+                    final Query query = storedProceduresExecutor.selectQueryForId(queryId);
+                    if (query != null && query.getActive().equals("1")) {
+                        final Protocol protocol = storedProceduresExecutor.selectProtocolForId(Integer.parseInt(query.getProtocol_id()));
+                        try {
+                            statusId = ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    System.out.print("trying to update schedule with id = ");
+                    System.out.println(scheduleId);
+                    System.out.print("status_id = ");
+                    System.out.println(statusId);
+                    storedProceduresExecutor.updateScheduleStatus(scheduleId, statusId);
+                }
+            }.start();
+
             System.out.println("Debug message. Alarm");
             harvesterTimerService.schedule();
         }

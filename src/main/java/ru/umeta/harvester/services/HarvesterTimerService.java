@@ -2,6 +2,8 @@ package ru.umeta.harvester.services;
 
 import ru.umeta.harvester.db.StoredProceduresExecutor;
 import ru.umeta.harvester.timer.HarvesterTimer;
+import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 public class HarvesterTimerService extends HttpServlet
         implements IHarvesterTimerService {
 
+    private static final long serialVersionUID = -3603543750927440988L;
     private final StoredProceduresExecutor storedProceduresExecutor;
 
     public HarvesterTimerService(StoredProceduresExecutor storedProceduresExecutor) {
@@ -27,4 +30,5 @@ public class HarvesterTimerService extends HttpServlet
     public void init() throws ServletException {
         schedule();
     }
+
 }

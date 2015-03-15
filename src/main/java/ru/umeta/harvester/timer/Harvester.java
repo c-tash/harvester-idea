@@ -1,65 +1,54 @@
 package ru.umeta.harvester.timer;
 
 
-public class Harvester implements Runnable {
-    int qid;// Query id
-    int sid;// Schedule id
-//	IntWrapper pid;
-//	StringWrapper eURL;
-//	StringWrapper sURL;
-//	StringWrapper sloc; //structure for the protocol
-//
-//	public Harvester() {
-//		qid = -1;
-//		sid = -1;
-//		pid = new IntWrapper();
-//		pid.value = -1;
-//		eURL = new StringWrapper();
-//		sURL = new StringWrapper();
-//		sloc = new StringWrapper();
-//		eURL.value = "default string";
-//		sURL.value = "default string";
-//		sloc.value = "default string";
-//	}
+import ru.umeta.harvester.db.IStoredProceduresExecutor;
+import ru.umeta.harvester.db.StoredProceduresExecutor;
+import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
 
-    public Harvester(int s, int q) {
-//		qid = q;
-//		sid = s;
-//		pid = new IntWrapper();
-//		pid.value = -1;
-//		eURL = new StringWrapper();
-//		sURL = new StringWrapper();
-//		sloc = new StringWrapper();
-//		eURL.value = "default string";
-//		sURL.value = "default string";
-//		sloc.value = "default string";
-//		this.na = na;
+public class Harvester implements Runnable {
+
+    private final int scheduleId;
+    private final int queryId;
+    private static IStoredProceduresExecutor storedProceduresExecutor;
+
+    public Harvester(int scheduleId, int queryId, IStoredProceduresExecutor storedProceduresExecutor) {
+        this.scheduleId = scheduleId;
+        this.queryId = queryId;
+        if (Harvester.storedProceduresExecutor == null) {
+            Harvester.storedProceduresExecutor = storedProceduresExecutor;
+        }
     }
 
     public void run() {
+        System.out.print("scheduleId = ");
+        System.out.println(scheduleId);
+        int statusId = 0;
+        final Query query = storedProceduresExecutor.selectQueryForId(queryId);
+        if (query != null && query.getActive().equals("1")) {
+            final Protocol protocol = storedProceduresExecutor.selectProtocolForId(Integer.parseInt(query.getProtocol_id()));
+            try {
+                statusId = ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.print("trying to update schedule with id = ");
+        System.out.println(scheduleId);
+        System.out.print("status_id = ");
+        System.out.println(statusId);
+        DBUpdateScheduleStatus.dbConnect(sid, status_id);
+		HarvesterTimerExecutor.updateTask();
     }
-//		System.out.print("schedule_id = ");
-//		System.out.println(sid);
-//		int status_id = 0;
+//		DBUpdateScheduleStatus.dbConnect(sid, status_id);
+//		HarvesterTimerExecutor.updateTask();
 //		if (DBSelectQuery.dbConnect(qid,eURL,sURL,pid,sloc)) {
 //			IHarvester harvester = null;
 //			Query qr = DBSelectQueryForId.dbConnect(qid);
 //			//Static loading
 //			String prtName = DBSelectProtocolNameForId.dbConnect(pid.getValue());
-//			switch (prtName) {
-//				case "aleph":
-//					harvester = new aleph.AlephHarvester();
-//					break;
-//				case "opac":
-//					harvester = new opac.OpacHarvester();
-//					break;
-//				case "sru":
-//					harvester = new sru.SruHarvester();
-//					break;
-//				case "marcsql":
-//					harvester = new marcsql.MarcSQLHarvester();
-//					break;
-//			}
+
 //
 //			//geonetwork loading
 //			/*harvester = new geonetwork.GeonetworkHarvester();
@@ -88,7 +77,7 @@ public class Harvester implements Runnable {
 //		System.out.println(status_id);
 //		DBUpdateScheduleStatus.dbConnect(sid, status_id);
 //		HarvesterTimerExecutor.updateTask();
-//	}
+	}
 //
 //	public static void main(String[] args) {
 //

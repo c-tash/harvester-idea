@@ -1,6 +1,8 @@
 package ru.umeta.harvester.db;
 
 import ru.umeta.harvester.model.HarvesterTask;
+import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
 
 public interface IStoredProceduresExecutor {
 
@@ -17,4 +19,10 @@ public interface IStoredProceduresExecutor {
     Boolean addUser(String login, String password);
 
     HarvesterTask checkNextHarvest();
+
+    Query selectQueryForId(int queryId);
+
+    Protocol selectProtocolForId(int protocolId);
+
+    boolean updateScheduleStatus(int scheduleId, int statusId);
 }

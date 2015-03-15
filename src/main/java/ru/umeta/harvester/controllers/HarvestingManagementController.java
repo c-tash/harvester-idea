@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import ru.umeta.harvester.services.IHarvestingManagementService;
+import ru.umeta.harvester.timer.ModuleEngine;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
@@ -90,15 +91,15 @@ import java.io.FileOutputStream;
         return "registersubmit";
     }
 
-    @RequestMapping(value = "/upload", method = RequestMethod.GET) public String upload() {
-        return "upload";
+    @RequestMapping(value = "/uploadProtocol", method = RequestMethod.GET) public String upload() {
+        return "uploadProtocol";
     }
 
-    @RequestMapping(value = "/doUpload", method = RequestMethod.POST) public @ResponseBody
-    String handleFileUpload(HttpServletRequest request, @RequestParam("name") String name,
+    @RequestMapping(value = "/doUploadProtocol", method = RequestMethod.POST) public @ResponseBody
+    String handleFileUpload(HttpServletRequest request, @RequestParam("className") String className,
         @RequestParam("file") MultipartFile file) {
-
-        String filePath = request.getSession().getServletContext().getRealPath("/") + "upload\\";
+        String name = file.getOriginalFilename();
+        String filePath = request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
@@ -107,7 +108,9 @@ import java.io.FileOutputStream;
                     new BufferedOutputStream(new FileOutputStream(new File(filePath + name)));
                 stream.write(bytes);
                 stream.close();
-                return "You successfully uploaded " + name + "!";
+
+
+                return "You successfully uploaded " + name + "! Result is:" + new ModuleEngine().executeClassMethod(filePath + name, className);
             } catch (Exception e) {
                 return "You failed to upload " + name + " => " + e.getMessage();
             }

@@ -3,7 +3,6 @@
     <output-path>$PROJECT_DIR$/out/artifacts/demo_harvester_jar</output-path>
     <root id="archive" name="demo-harvester.jar">
       <element id="module-output" name="demo-harvester" />
-      <element id="extracted-dir" path="C:/work/repos/harvester/out/artifacts/base_harvester_jar/base-harvester.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

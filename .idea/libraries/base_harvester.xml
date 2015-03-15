@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="base-harvester">
     <CLASSES>
-      <root url="jar://C:/work/repos/harvester/out/artifacts/base_harvester_jar/base-harvester.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/base-harvester.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
