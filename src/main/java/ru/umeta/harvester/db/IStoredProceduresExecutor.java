@@ -6,13 +6,14 @@ import ru.umeta.harvesting.base.model.Query;
 
 public interface IStoredProceduresExecutor {
 
-	/**
-	 * Executes the ActivateQuery SQL stored procedure
-	 * @param qid Query id
-	 * @param uid User id
-	 * @return status of the execution
-	 */
-	int activateQuery(int qid, int uid);
+    /**
+     * Executes the ActivateQuery SQL stored procedure
+     *
+     * @param qid Query id
+     * @param uid User id
+     * @return status of the execution
+     */
+    int activateQuery(int qid, int uid);
 
     Boolean selectUser(String login);
 
@@ -25,4 +26,6 @@ public interface IStoredProceduresExecutor {
     Protocol selectProtocolForId(int protocolId);
 
     boolean updateScheduleStatus(int scheduleId, int statusId);
+
+    void insertProtocol(Protocol protocol);
 }

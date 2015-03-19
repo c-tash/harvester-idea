@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import ru.umeta.harvester.services.IHarvestingManagementService;
-import ru.umeta.harvester.timer.ModuleEngine;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
@@ -99,7 +98,8 @@ import java.io.FileOutputStream;
     String handleFileUpload(HttpServletRequest request, @RequestParam("className") String className,
         @RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
-        String filePath = request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
+        String filePath =
+            request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
@@ -108,9 +108,9 @@ import java.io.FileOutputStream;
                     new BufferedOutputStream(new FileOutputStream(new File(filePath + name)));
                 stream.write(bytes);
                 stream.close();
+                harvestingManagementService.addProtocol(name, className, filePath + name);
 
-
-                return "You successfully uploaded " + name + "! Result is:" + new ModuleEngine().executeClassMethod(filePath + name, className);
+                return "You successfully uploaded " + name;
             } catch (Exception e) {
                 return "You failed to upload " + name + " => " + e.getMessage();
             }

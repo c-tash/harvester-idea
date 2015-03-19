@@ -6,6 +6,7 @@ import ru.umeta.harvester.services.IHarvesterTimerService;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +23,8 @@ public enum HarvesterTimer {
     private int queryId = -1;
     private HarvesterTimerTask harvesterTimerTask;
 
-    public synchronized void schedule(HarvesterTask harvesterTask, IHarvesterTimerService harvesterTimerService) throws NullPointerException {
+    public synchronized void schedule(HarvesterTask harvesterTask,
+        IHarvesterTimerService harvesterTimerService) throws NullPointerException {
 
         if (harvesterTask == null) {
             System.out.println("There is nothing to harvest");
@@ -47,16 +49,15 @@ public enum HarvesterTimer {
 
     private class HarvesterTimerTask extends TimerTask {
 
-        private final IStoredProceduresExecutor storedProceduresExecutor;
         private final IHarvesterTimerService harvesterTimerService;
 
-        public HarvesterTimerTask(IHarvesterTimerService harvesterTimerService, IStoredProceduresExecutor storedProceduresExecutor) {
+        public HarvesterTimerTask(IHarvesterTimerService harvesterTimerService) {
             this.harvesterTimerService = harvesterTimerService;
-            this.storedProceduresExecutor = storedProceduresExecutor;
         }
 
         public void run() {
-            System.out.println("The delay is " + (System.currentTimeMillis() - scheduledExecutionTime()));
+            System.out
+                .println("The delay is " + (System.currentTimeMillis() - scheduledExecutionTime()));
             System.out.println("It's time for harvesting!");
             //Harvester nextHarv = new Harvester(scheduleId, queryId);
             new Thread() {
@@ -64,21 +65,24 @@ public enum HarvesterTimer {
                     System.out.print("scheduleId = ");
                     System.out.println(scheduleId);
                     int statusId = 0;
-                    final Query query = storedProceduresExecutor.selectQueryForId(queryId);
-                    if (query != null && query.getActive().equals("1")) {
-                        final Protocol protocol = storedProceduresExecutor.selectProtocolForId(Integer.parseInt(query.getProtocol_id()));
+
+                    final Protocol protocol = harvesterTimerService.selectProtocolForQueryId(queryId);
+                    if (protocol != null) {
                         try {
-                            statusId = ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_());
+                            statusId =
+                                ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
 
-                    System.out.print("trying to update schedule with id = ");
+                    System.out.print(MessageFormat
+                        .format("trying to update schedule with id = {0}, status_id = {1}", scheduleId,
+                            statusId));
                     System.out.println(scheduleId);
                     System.out.print("status_id = ");
                     System.out.println(statusId);
-                    storedProceduresExecutor.updateScheduleStatus(scheduleId, statusId);
+                    harvesterTimerService.finishHarvesting(scheduleId, statusId);
                 }
             }.start();
 

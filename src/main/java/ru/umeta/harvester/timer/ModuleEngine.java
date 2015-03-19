@@ -5,14 +5,10 @@ import ru.umeta.harvesting.base.IHarvester;
 import ru.umeta.harvesting.base.model.Query;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class ModuleEngine {
 
@@ -22,8 +18,9 @@ public class ModuleEngine {
         try {
             if (!hashMap.containsKey(path)) {
                 File file = new File(path);
-                URL jarUrl = new URL("jar", "","file:" + file.getAbsolutePath()+"!/");
-                hashMap.put(path, new URLClassLoader (new URL[] {jarUrl}, ModuleEngine.class.getClassLoader()));
+                URL jarUrl = new URL("jar", "", "file:" + file.getAbsolutePath() + "!/");
+                hashMap.put(path,
+                    new URLClassLoader(new URL[] {jarUrl}, ModuleEngine.class.getClassLoader()));
             }
 
             Class harvesterClass = Class.forName(name, true, hashMap.get(path));

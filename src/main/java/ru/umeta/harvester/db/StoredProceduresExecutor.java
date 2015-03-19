@@ -20,13 +20,13 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     private static final String EXEC_SELECT_QUERY_FOR_ID = "EXEC SelectQueryForId @qid = ?";
     private static final String EXEC_SELECT_PROTOCOL_FOR_ID = "EXEC SelectProtocolForId @pid = ?";
 
+    public StoredProceduresExecutor() throws ClassNotFoundException, SQLException {
+        Class.forName(SQL_DRIVER_NAME);
+    }
+
     private Connection getConnection() throws SQLException {
         return DriverManager
             .getConnection(SQL_DB_CONNECT_STRING + SQL_DB_NAME, SQL_DB_USER, SQL_DB_PASS);
-    }
-
-    public StoredProceduresExecutor() throws ClassNotFoundException, SQLException {
-        Class.forName(SQL_DRIVER_NAME);
     }
 
     @Override public int activateQuery(int qid, int uid) {
@@ -75,8 +75,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override
-    public HarvesterTask checkNextHarvest() {
+    @Override public HarvesterTask checkNextHarvest() {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_CHECK_NEXT_SCHEDULE);
@@ -89,7 +88,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             Date date = resultSet.getDate("datetime");
 
             if (date == null)
-                throw new NullPointerException("\"" + EXEC_CHECK_NEXT_SCHEDULE + "\"" + " returned null date.");
+                throw new NullPointerException(
+                    "\"" + EXEC_CHECK_NEXT_SCHEDULE + "\"" + " returned null date.");
 
             return new HarvesterTask(date, scheduleId, queryId);
         } catch (Exception e) {
@@ -98,8 +98,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override
-    public Query selectQueryForId(int queryId) {
+    @Override public Query selectQueryForId(int queryId) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_QUERY_FOR_ID);
@@ -108,8 +107,10 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             Query query;
 
             if (resultSet.next()) {
-                query = new Query(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),
-                        resultSet.getString(6),resultSet.getString(7),resultSet.getString(8),resultSet.getString(9),resultSet.getString(10),resultSet.getString(11));
+                query = new Query(resultSet.getString(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                    resultSet.getString(6), resultSet.getString(7), resultSet.getString(8),
+                    resultSet.getString(9), resultSet.getString(10), resultSet.getString(11));
             } else {
                 return null;
             }
@@ -121,8 +122,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override
-    public Protocol selectProtocolForId(int protocolId) {
+    @Override public Protocol selectProtocolForId(int protocolId) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_PROTOCOL_FOR_ID);
@@ -146,21 +146,38 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override
-    public boolean updateScheduleStatus(int scheduleId, int statusId) {
+    @Override public boolean updateScheduleStatus(int scheduleId, int statusId) {
         try (Connection conn = getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("exec UpdateStatusForSchedule @sid = ?, @status = ?");
+            PreparedStatement statement =
+                conn.prepareStatement("EXEC UpdateStatusForSchedule @sid = ?, @status = ?");
             statement.setInt(1, scheduleId);
-            statement.setInt(1, statusId);
+            statement.setInt(2, statusId);
             int result = statement.executeUpdate();
             if (result <= 0) {
-                throw Exception("The status update has not updated anything.");
+                throw new Exception("The status update has not updated anything.");
             }
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
+    @Override public void insertProtocol(Protocol protocol) {
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement =
+                conn.prepareStatement("INSERT INTO Protocol_2(name, class, path, xml) VALUES(?,?,?,?)");
+            statement.setString(1, protocol.getName());
+            statement.setString(2, protocol.getClass_());
+            statement.setString(3, protocol.getPath());
+            statement.setString(4, protocol.getXml());
+            int result = statement.executeUpdate();
+            if (result <= 0) {
+                throw new Exception("The status update has not updated anything.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

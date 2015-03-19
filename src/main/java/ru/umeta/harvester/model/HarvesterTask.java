@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by ctash on 08.03.2015.
  */
-public class HarvesterTask implements Serializable{
+public class HarvesterTask implements Serializable {
 
     private static final long serialVersionUID = -7086045561313377427L;
 
