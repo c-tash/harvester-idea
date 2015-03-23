@@ -166,7 +166,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     @Override public void insertProtocol(Protocol protocol) {
         try (Connection conn = getConnection()) {
             PreparedStatement statement =
-                conn.prepareStatement("INSERT INTO Protocol_2(name, class, path, xml) VALUES(?,?,?,?)");
+                conn.prepareStatement("INSERT INTO Protocol(name, class, path, xml) VALUES(?,?,?,?)");
             statement.setString(1, protocol.getName());
             statement.setString(2, protocol.getClass_());
             statement.setString(3, protocol.getPath());

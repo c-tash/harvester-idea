@@ -48,28 +48,43 @@
     <script src="${pageContext.request.contextPath}/resources/js/jqBootstrapValidation.js"></script>
 </head>
 <body>
-<form class="form-horizontal">
+<form class="form-horizontal" action="/registersubmit" method="post">
+    <div>
+        Register a new user.
+    </div>
     <div class="control-group">
-        <label class="control-label">Type something</label>
+        <label class="control-label">Login</label>
 
         <div class="controls">
-            <input type="text" name="some_field"/>
+            <input type="text" name="username"/>
 
             <p class="help-block"></p>
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">Type it again</label>
+        <label class="control-label">Password</label>
+
+        <div class="controls">
+            <input type="text" name="password"/>
+
+            <p class="help-block"></p>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Confirm password</label>
 
         <div class="controls">
             <input
                     type="text"
-                    data-validation-match-match="some_field"
-                    name="some_other_field"
+                    data-validation-match-match="password"
+                    name="confirm_password"
                     />
 
             <p class="help-block"></p>
         </div>
+    </div>
+    <div class="container">
+        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
     </div>
 </form>
 <!--div class="container">

@@ -9,12 +9,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import ru.umeta.harvester.model.User;
 import ru.umeta.harvester.services.IHarvestingManagementService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 //import ru.umeta.harvesterspring.services.IHarvestingManagementService;
 
@@ -26,12 +31,24 @@ import java.io.FileOutputStream;
 
     private static final Logger logger =
         LoggerFactory.getLogger(HarvestingManagementController.class);
-
+    private final Map<Integer, User> userMap = new HashMap<>();
     private final IHarvestingManagementService harvestingManagementService;
 
     public HarvestingManagementController(
         IHarvestingManagementService harvestingManagementService) {
         this.harvestingManagementService = harvestingManagementService;
+    }
+
+    private String getHash(String value) {
+        try {
+            byte[] passwordBites = value.getBytes("UTF-8");
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            byte[] digest = messageDigest.digest(passwordBites);
+            return Arrays.toString(digest);
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     //	/**
@@ -73,8 +90,27 @@ import java.io.FileOutputStream;
     //	}
 
     @RequestMapping(value = "/login", method = RequestMethod.GET) public String login() {
-
         return "login";
+    }
+
+    @RequestMapping(value = "/loginsubmit", method = RequestMethod.POST)
+    public String loginsubmit(@RequestParam("username") String username,
+        @RequestParam("password") String password, HttpServletResponse response, Model model) {
+
+        final String hash = getHash(password);
+        Integer token = hash.hashCode();
+        if (!userMap.containsKey(token)) {
+            userMap.put(token, new User(username, hash));
+        }
+
+        return queries(token, response, model);
+    }
+
+    @RequestMapping(value = "/queries", method = RequestMethod.POST)
+    public String queries(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
+        final User user = getUserFromToken(token, response);
+        harvestingManagementService.
+
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET) public String register() {
@@ -84,14 +120,29 @@ import java.io.FileOutputStream;
 
     @RequestMapping(value = "/registersubmit", method = RequestMethod.POST)
     public String registerSubmit(@RequestParam("username") String username,
-        @RequestParam("password") String password,
-        @RequestParam("confirmPassword") String confirmPassword, Model model) {
+        @RequestParam("password") String password, Model model) {
         String result = harvestingManagementService.register(username, password);
         return "registersubmit";
     }
 
-    @RequestMapping(value = "/uploadProtocol", method = RequestMethod.GET) public String upload() {
+    @RequestMapping(value = "/uploadProtocol", method = RequestMethod.POST)
+    public String upload(@RequestParam("token") Integer token, HttpServletResponse response) {
+        final User user = getUserFromToken(token, response);
         return "uploadProtocol";
+    }
+
+    private User getUserFromToken(Integer token, HttpServletResponse response) {
+        if (!userMap.containsKey(token)) {
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                    "Unauthorized: Authentication token was either missing or invalid.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        } else {
+            return userMap.get(token);
+        }
     }
 
     @RequestMapping(value = "/doUploadProtocol", method = RequestMethod.POST) public @ResponseBody
@@ -119,4 +170,7 @@ import java.io.FileOutputStream;
         }
 
     }
+
+    //    @RequestMapping(value = "/queries", method = RequestMethod.POST)
+    //    public String nodes(@)
 }

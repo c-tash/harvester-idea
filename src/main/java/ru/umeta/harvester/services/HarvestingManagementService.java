@@ -7,9 +7,6 @@ import ru.umeta.harvesting.base.model.Protocol;
 
 public class HarvestingManagementService implements IHarvestingManagementService {
 
-    final static String[] msgArr = {"dd"};
-    //ErrorMessagesXMLParser.main("ErrorMessages.xml",ErrorMessagesXMLParser.RU);
-
     private final IStoredProceduresExecutor storedProceduresExecutor;
 
     public HarvestingManagementService(IStoredProceduresExecutor storedProceduresExecutor) {
@@ -36,44 +33,37 @@ public class HarvestingManagementService implements IHarvestingManagementService
         }
     }
 
-    //	public static void main(String[] args) {
-    //		ProtocolMessage msg = getProtocolForId("aleph", "aleph",8);
-    //		System.out.println(msg.getProtocolArray()[0].getXml());
-    //	}
-
-
-
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueryInfo(java.lang.String, java.lang.String, int)
-    //     */
-    //    @Override public QueryMessage getQueryInfo(String login, String pw, int qid) {
-    //        IntWrapper uid = new IntWrapper();
-    //        Query qr = new Query();
-    //        QueryMessage msg = new QueryMessage(-10000, null, null);
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            qr = DBSelectQueryForId.dbConnect(qid);
-    //            if (qr == null) {
-    //                msg.code = 17;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            } else {
-    //                msg.queryArray = new Query[1];
-    //                msg.queryArray[0] = qr;
-    //                msg.code = 1;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //    }
-    //
+        /* (non-Javadoc)
+         * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueryInfo(java.lang.String, java.lang.String, int)
+         */
+//    @Override public QueryMessage getQueryInfo(String login, String pw, int qid) {
+//        IntWrapper uid = new IntWrapper();
+//        Query qr = new Query();
+//        QueryMessage msg = new QueryMessage(-10000, null, null);
+//        if (!DBSelectUser.dbConnect(login)) {
+//            msg.code = 2;
+//            msg.text = msgArr[msg.code];
+//            return msg;
+//        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
+//            qr = DBSelectQueryForId.dbConnect(qid);
+//            if (qr == null) {
+//                msg.code = 17;
+//                msg.text = msgArr[msg.code];
+//                return msg;
+//            } else {
+//                msg.queryArray = new Query[1];
+//                msg.queryArray[0] = qr;
+//                msg.code = 1;
+//                msg.text = msgArr[msg.code];
+//                return msg;
+//            }
+//        } else {
+//            msg.code = 2;
+//            msg.text = msgArr[msg.code];
+//            return msg;
+//        }
+//    }
+//    //
     //
     //
     //    /* (non-Javadoc)
