@@ -1,10 +1,13 @@
 package ru.umeta.harvester.db;
 
 import ru.umeta.harvester.model.HarvesterTask;
+import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
@@ -177,6 +180,52 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override public User checkPassword(User userWithoutId) {
+        try (Connection conn = getConnection()) {
+            String login = userWithoutId.getUser();
+            String password = userWithoutId.getPassword();
+
+            PreparedStatement statement = conn.prepareStatement("EXEC CheckPass @lg = ?, @pw = ?");
+            statement.setString(1, login);
+            statement.setString(2, password);
+            ResultSet resultSet = statement.executeQuery();
+            Boolean userExists = resultSet.next();
+            User user = null;
+            if (userExists)
+                user = new User(login, password, resultSet.getInt("id"));
+            return user;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override public List<Query> getQueriesForUser(User user) {
+        List<Query> list = new ArrayList<>();
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("EXEC SelectQueryForUser @lg = ?");
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Query q = new Query(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),
+                    resultSet.getString(6),resultSet.getString(7),resultSet.getString(8),resultSet.getString(9),resultSet.getString(10),resultSet.getString(11));
+                list.add(q);
+            } else {
+                return list;
+            }
+            while (resultSet.next()) {
+                Query q = new Query(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),
+                    resultSet.getString(6),resultSet.getString(7),resultSet.getString(8),resultSet.getString(9),resultSet.getString(10),resultSet.getString(11));
+                list.add(q);
+            }
+            return list;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return list;
         }
     }
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvester.services.IHarvestingManagementService;
+import ru.umeta.harvesting.base.model.Query;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //import ru.umeta.harvesterspring.services.IHarvestingManagementService;
@@ -96,11 +98,16 @@ import java.util.Map;
     @RequestMapping(value = "/loginsubmit", method = RequestMethod.POST)
     public String loginsubmit(@RequestParam("username") String username,
         @RequestParam("password") String password, HttpServletResponse response, Model model) {
-
         final String hash = getHash(password);
-        Integer token = hash.hashCode();
+        User user = new User(username, hash, null);
+        Integer token = user.hashCode();
         if (!userMap.containsKey(token)) {
-            userMap.put(token, new User(username, hash));
+            user = harvestingManagementService.login(user);
+            if (user != null) {
+                userMap.put(token, user);
+            } else {
+                return register();
+            }
         }
 
         return queries(token, response, model);
@@ -109,8 +116,10 @@ import java.util.Map;
     @RequestMapping(value = "/queries", method = RequestMethod.POST)
     public String queries(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
-        harvestingManagementService.
+        final List<Query> queriesForUser = harvestingManagementService.getQueriesForUser(user);
 
+        model.addAttribute("token", token);
+        return "queries";
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET) public String register() {
@@ -121,7 +130,8 @@ import java.util.Map;
     @RequestMapping(value = "/registersubmit", method = RequestMethod.POST)
     public String registerSubmit(@RequestParam("username") String username,
         @RequestParam("password") String password, Model model) {
-        String result = harvestingManagementService.register(username, password);
+        String result = harvestingManagementService.register(username, getHash(password));
+        model.addAttribute("result", result);
         return "registersubmit";
     }
 

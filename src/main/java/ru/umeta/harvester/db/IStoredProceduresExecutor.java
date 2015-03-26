@@ -1,8 +1,11 @@
 package ru.umeta.harvester.db;
 
 import ru.umeta.harvester.model.HarvesterTask;
+import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
+
+import java.util.List;
 
 public interface IStoredProceduresExecutor {
 
@@ -28,4 +31,8 @@ public interface IStoredProceduresExecutor {
     boolean updateScheduleStatus(int scheduleId, int statusId);
 
     void insertProtocol(Protocol protocol);
+
+    User checkPassword(User userWithoutId);
+
+    List<Query> getQueriesForUser(User user);
 }

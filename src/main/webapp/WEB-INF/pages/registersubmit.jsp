@@ -7,8 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-    <h1>${username}</h1>
-    <h1>${password}</h1>
-    <h1>${confirmPassword}</h1>
+    <h1>${result}</h1>
 </body>
 </html>

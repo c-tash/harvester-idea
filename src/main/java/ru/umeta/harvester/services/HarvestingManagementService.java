@@ -1,7 +1,11 @@
 package ru.umeta.harvester.services;
 
 import ru.umeta.harvester.db.IStoredProceduresExecutor;
+import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
+
+import java.util.List;
 //import xml.ErrorMessagesXMLParser;
 
 
@@ -173,44 +177,9 @@ public class HarvestingManagementService implements IHarvestingManagementService
     //    /* (non-Javadoc)
     //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueriesForUser(java.lang.String, java.lang.String)
     //     */
-    //    @Override public QueryMessage getQueriesForUser(String login, String pw) {
-    //        IntWrapper uid = new IntWrapper();
-    //        ArrayList<Query> arr = new ArrayList<Query>();
-    //        boolean noXMLflag = false;
-    //        if (msgArr == null)
-    //            noXMLflag = true;
-    //        QueryMessage msg = new QueryMessage(-10000, null, null);
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = noXMLflag ?
-    //                "Providing error message has failed. ������ ��� ������� ��������� ������." :
-    //                msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            arr = DBSelectQueryForUser.dbConnect(login);
-    //            if (arr == null) {
-    //                msg.code = 17;
-    //                msg.text = noXMLflag ?
-    //                    "Providing error message has failed. ������ ��� ������� ��������� ������." :
-    //                    msgArr[msg.code];
-    //                return msg;
-    //            } else {
-    //                msg.getQueryArrayFromList(arr);
-    //                msg.code = 1;
-    //                msg.text = noXMLflag ?
-    //                    "Providing error message has failed. ������ ��� ������� ��������� ������." :
-    //                    msgArr[msg.code];
-    //                return msg;
-    //            }
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = noXMLflag ?
-    //                "Providing error message has failed. ������ ��� ������� ��������� ������." :
-    //                msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
+        @Override public List<Query> getQueriesForUser(User user) {
+                return storedProceduresExecutor.getQueriesForUser(user);
+        }
     //
     //    /* (non-Javadoc)
     //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getFailedAttemptsForQuery(java.lang.String, java.lang.String, int)
@@ -246,7 +215,6 @@ public class HarvestingManagementService implements IHarvestingManagementService
     //    }
 
     @Override public String register(String login, String pw) {
-        //        ServiceMessage msg = new ServiceMessage(-10000, null);
         if (!validateString(login)) {
             return "BAD_INPUT";
         }
@@ -256,6 +224,13 @@ public class HarvestingManagementService implements IHarvestingManagementService
         } else {
             return "ERROR_ADD_USER";
         }
+    }
+
+    @Override public User login(User userWithoutId) {
+        if (!validateString(userWithoutId.getUser())) {
+            return null;
+        }
+        return storedProceduresExecutor.checkPassword(userWithoutId);
     }
 
     //    @Override public ServiceMessage deleteQuery(String login, String pw, int qid) {//������� ������

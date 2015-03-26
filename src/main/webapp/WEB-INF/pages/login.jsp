@@ -65,8 +65,8 @@
 		<div class="form-signin">
 			<form action="loginsubmit" method="post" id="signinForm">
 			  <h2 class="form-signin-heading">Please sign in</h2>
-			  <input type="text" class="input-block-level" placeholder="Login">
-			  <input type="password" class="input-block-level" placeholder="Password">
+			  <input type="text" class="input-block-level" placeholder="Login" name="username">
+			  <input type="password" class="input-block-level" placeholder="Password" name="password">
 			  <label class="checkbox">
 			    <input type="checkbox" value="remember-me"> Remember me
 			  </label>
