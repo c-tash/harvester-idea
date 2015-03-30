@@ -206,7 +206,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     @Override public List<Query> getQueriesForUser(User user) {
         List<Query> list = new ArrayList<>();
         try (Connection conn = getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("EXEC SelectQueryForUser @lg = ?");
+            PreparedStatement statement = conn.prepareStatement("EXEC SelectQueryForUser @uid = ?");
+            statement.setInt(1,user.getId());
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
