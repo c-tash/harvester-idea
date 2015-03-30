@@ -176,7 +176,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             statement.setString(4, protocol.getXml());
             int result = statement.executeUpdate();
             if (result <= 0) {
-                throw new Exception("The status update has not updated anything.");
+                throw new Exception("The protocol insert has not inserted anything.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -207,7 +207,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         List<Query> list = new ArrayList<>();
         try (Connection conn = getConnection()) {
             PreparedStatement statement = conn.prepareStatement("EXEC SelectQueryForUser @uid = ?");
-            statement.setInt(1,user.getId());
+            statement.setInt(1, user.getId());
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
@@ -224,6 +224,31 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             }
             return list;
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return list;
+        }
+    }
+
+    @Override public List<Protocol> getProtocols() {
+        List<Protocol> list = new ArrayList<>();
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("EXEC SelectProtocols");
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Protocol protocol = new Protocol(resultSet.getInt(1),resultSet.getString(2));
+                list.add(protocol);
+            } else {
+                conn.close();
+                return null;
+            }
+            while (resultSet.next()) {
+                Protocol protocol = new Protocol(resultSet.getInt(1),resultSet.getString(2));
+                list.add(protocol);
+            }
+
+            conn.close();
+            return list;
         } catch (Exception e) {
             e.printStackTrace();
             return list;

@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Sign in &middot;Harvester</title>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<html>
+<head>
+    <title>Вход на Харвестер</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -64,20 +62,20 @@
 	<div class="container">
 		<div class="form-signin">
 			<form action="loginsubmit" method="post" id="signinForm">
-			  <h2 class="form-signin-heading">Please sign in</h2>
-			  <input type="text" class="input-block-level" placeholder="Login" name="username">
-			  <input type="password" class="input-block-level" placeholder="Password" name="password">
-			  <label class="checkbox">
-			    <input type="checkbox" value="remember-me"> Remember me
-			  </label>
+			  <h2 class="form-signin-heading">Введитие логин и пароль для входа на Харвестер</h2>
+			  <input type="text" class="input-block-level" placeholder="Логин" name="username">
+			  <input type="password" class="input-block-level" placeholder="Пароль" name="password">
+			  <%--<label class="checkbox">--%>
+			    <%--<input type="checkbox" value="remember-me"> Remember me--%>
+			  <%--</label>--%>
 			  <div class="container">
-			  	<button class="btn btn-large btn-primary" type="submit">Sign in</button>
+			  	<button class="btn btn-large btn-primary" type="submit">Войти</button>
 			  </div>
 			</form>
 			<form class="form-inline" action="register">
 				<div class="form-group">
-					<label for="btnSignUp">First time?</label>
-					<button class="btn btn-small btn-info" type="submit" id="btnSignUp">Sign up</button>
+					<label for="btnSignUp">В первый раз здесь?</label>
+					<button class="btn btn-small btn-info" type="submit" id="btnSignUp">Регистрация</button>
 				</div>
 	      	</form>
 		</div>
@@ -91,19 +89,19 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../assets/js/jquery.js"></script>
-    <script src="../assets/js/bootstrap-transition.js"></script>
-    <script src="../assets/js/bootstrap-alert.js"></script>
-    <script src="../assets/js/bootstrap-modal.js"></script>
-    <script src="../assets/js/bootstrap-dropdown.js"></script>
-    <script src="../assets/js/bootstrap-scrollspy.js"></script>
-    <script src="../assets/js/bootstrap-tab.js"></script>
-    <script src="../assets/js/bootstrap-tooltip.js"></script>
-    <script src="../assets/js/bootstrap-popover.js"></script>
-    <script src="../assets/js/bootstrap-button.js"></script>
-    <script src="../assets/js/bootstrap-collapse.js"></script>
-    <script src="../assets/js/bootstrap-carousel.js"></script>
-    <script src="../assets/js/bootstrap-typeahead.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/jquery.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-transition.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-alert.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-modal.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-dropdown.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-scrollspy.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-tab.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-tooltip.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-popover.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-button.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-collapse.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-carousel.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap-typeahead.js"></script>
 
   </body>
 </html>

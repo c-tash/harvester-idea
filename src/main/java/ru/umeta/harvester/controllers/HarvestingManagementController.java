@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvester.services.IHarvestingManagementService;
+import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
 
 import javax.servlet.http.HttpServletRequest;
@@ -116,9 +117,10 @@ import java.util.Map;
     @RequestMapping(value = "/queries", method = RequestMethod.POST)
     public String queries(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
-        final List<Query> queriesForUser = harvestingManagementService.getQueriesForUser(user);
+        final List<Query> queries = harvestingManagementService.getQueriesForUser(user);
 
         model.addAttribute("token", token);
+        model.addAttribute("queries", queries);
         return "queries";
     }
 
@@ -135,10 +137,10 @@ import java.util.Map;
         return "registersubmit";
     }
 
-    @RequestMapping(value = "/uploadProtocol", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadprotocol", method = RequestMethod.POST)
     public String upload(@RequestParam("token") Integer token, HttpServletResponse response) {
         final User user = getUserFromToken(token, response);
-        return "uploadProtocol";
+        return "uploadprotocol";
     }
 
     private User getUserFromToken(Integer token, HttpServletResponse response) {
@@ -155,7 +157,7 @@ import java.util.Map;
         }
     }
 
-    @RequestMapping(value = "/doUploadProtocol", method = RequestMethod.POST) public @ResponseBody
+    @RequestMapping(value = "/douploadprotocol", method = RequestMethod.POST) public @ResponseBody
     String handleFileUpload(HttpServletRequest request, @RequestParam("className") String className,
         @RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
@@ -181,6 +183,25 @@ import java.util.Map;
 
     }
 
+    @RequestMapping(value = "/createquery", method = RequestMethod.POST)
+    public String createQuery(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
+        final User user = getUserFromToken(token, response);
+        final List<Protocol> protocols = harvestingManagementService.getProtocols();
+        model.addAttribute("query", new Query());
+        model.addAttribute("token", token);
+        model.addAttribute("protocols", protocols);
+        return "createquery";
+    }
+
+    @RequestMapping(value = "/submitquery", method = RequestMethod.POST)
+    public String querySubmit(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
+        final User user = getUserFromToken(token, response);
+        final List<Protocol> protocols = harvestingManagementService.getProtocols();
+
+        model.addAttribute("token", token);
+        model.addAttribute("protocols", protocols);
+        return "submitquery";
+    }
     //    @RequestMapping(value = "/queries", method = RequestMethod.POST)
     //    public String nodes(@)
 }

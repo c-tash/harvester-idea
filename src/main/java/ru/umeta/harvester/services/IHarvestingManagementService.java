@@ -1,6 +1,7 @@
 package ru.umeta.harvester.services;
 
 import ru.umeta.harvester.model.User;
+import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
 
 import java.util.List;
@@ -160,6 +161,8 @@ public interface IHarvestingManagementService {
 //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueriesForUser(java.lang.String, java.lang.String)
 //     */
     List<Query> getQueriesForUser(User user);
+
+    List<Protocol> getProtocols();
 
     public String register(String login, String pw);
 

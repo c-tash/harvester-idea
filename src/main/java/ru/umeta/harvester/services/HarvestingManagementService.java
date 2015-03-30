@@ -180,6 +180,10 @@ public class HarvestingManagementService implements IHarvestingManagementService
         @Override public List<Query> getQueriesForUser(User user) {
                 return storedProceduresExecutor.getQueriesForUser(user);
         }
+
+        @Override public List<Protocol> getProtocols() {
+            return storedProceduresExecutor.getProtocols();
+        }
     //
     //    /* (non-Javadoc)
     //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getFailedAttemptsForQuery(java.lang.String, java.lang.String, int)

@@ -35,4 +35,6 @@ public interface IStoredProceduresExecutor {
     User checkPassword(User userWithoutId);
 
     List<Query> getQueriesForUser(User user);
+
+    List<Protocol> getProtocols();
 }

@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- <meta http-equiv="Refresh" content="20; URL=/harvesting/nodes.html"> -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
     <style type="text/css">
         .table-queries {
@@ -23,8 +22,9 @@
 <div>
     <div class="table-queries">
         <h2>Просмотр текущих запросов</h2>
-        <form class="form-horizontal" action="create_query">
+        <form class="form-horizontal" action="createquery" method="POST">
             <div class="form-group">
+                <input type="hidden" value="${token}" name="token"/>
                 <button class="btn btn-primary" type="submit" id="btnSignUp">Новый запрос</button>
             </div>
         </form>
@@ -42,27 +42,27 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach var="query" items="${queryList}">
+            <c:forEach var="query" items="${queries}">
                 <tr>
-                    <td>${query.getName}
+                    <td>${query.getName()}
                     </td>
-                    <td>${query.getEndURL}
+                    <td>${query.getEndURL()}
                     </td>
-                    <td>${query.getStartURL}
+                    <td>${query.getStartURL()}
                     </td>
-                    <td>${query.getProtocol_id}
+                    <td>${query.getProtocol_id()}
                     </td>
-                    <td>${query.getTime}
+                    <td>${query.getTime()}
                     </td>
-                    <td>${query.getReg}
+                    <td>${query.getReg()}
                     </td>
-                    <td>${query.getStruct_loc}
+                    <td>${query.getStruct_loc()}
                     </td>
-                    <td>${query.getActive}
+                    <td>${query.getActive()}
                     </td>
                     <td>
-                        <form action="query_info">
-                            <input type="hidden" value="${query.getId}" name="qid">
+                        <form action="queryinfo">
+                            <input type="hidden" value="${query.getId()}" name="qid">
                             <input type="submit" value="Подробнее">
                         </form>
                     </td>
@@ -80,8 +80,8 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="../assets/js/jquery.js"></script>
-<script src="../assets/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources//js/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/resources//js/bootstrap.min.js"></script>
 </body>
 
 
