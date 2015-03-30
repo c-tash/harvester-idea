@@ -11,7 +11,7 @@
     <title>Upload new protocol for Harvester.</title>
 </head>
 <body>
-    <form method="POST" enctype="multipart/form-data" action="/doUploadProtocol">
+    <form method="POST" enctype="multipart/form-data" action="/douploadprotocol">
         File to upload(path to .jar file): <input type="file" name="file">
         <br />
         Full reference name (e.g. java.util.ArrayList): <input type="text" name="className">

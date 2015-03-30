@@ -140,7 +140,7 @@ import java.util.Map;
     @RequestMapping(value = "/uploadprotocol", method = RequestMethod.POST)
     public String upload(@RequestParam("token") Integer token, HttpServletResponse response) {
         final User user = getUserFromToken(token, response);
-        return "uploadprotocol";
+        return "uploadProtocol";
     }
 
     private User getUserFromToken(Integer token, HttpServletResponse response) {
