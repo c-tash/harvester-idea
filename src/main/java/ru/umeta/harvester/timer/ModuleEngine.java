@@ -20,7 +20,7 @@ public class ModuleEngine {
                 File file = new File(path);
                 URL jarUrl = new URL("jar", "", "file:" + file.getAbsolutePath() + "!/");
                 hashMap.put(path,
-                    new URLClassLoader(new URL[] {jarUrl}, ModuleEngine.class.getClassLoader()));
+                        new URLClassLoader(new URL[]{jarUrl}, ModuleEngine.class.getClassLoader()));
             }
 
             Class harvesterClass = Class.forName(name, true, hashMap.get(path));

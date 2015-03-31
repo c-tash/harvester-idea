@@ -21,20 +21,22 @@ public class HarvesterTimerService extends HttpServlet implements IHarvesterTime
         this.storedProceduresExecutor = storedProceduresExecutor;
     }
 
-    @Override public void schedule() {
+    @Override
+    public void schedule() {
         HarvesterTimer.INSTANCE.schedule(storedProceduresExecutor.checkNextHarvest(), this);
     }
 
-    @Override public Protocol selectProtocolForQueryId(int queryId) {
+    @Override
+    public Protocol selectProtocolForQueryId(int queryId) {
         final Query query = storedProceduresExecutor.selectQueryForId(queryId);
         if (query != null && query.getActive().equals("1")) {
-            return storedProceduresExecutor
-                .selectProtocolForId(Integer.parseInt(query.getProtocol_id()));
+            return storedProceduresExecutor.selectProtocolForId(Integer.parseInt(query.getProtocol_id()));
         }
         return null;
     }
 
-    @Override public void finishHarvesting(int scheduleId, int statusId) {
+    @Override
+    public void finishHarvesting(int scheduleId, int statusId) {
         storedProceduresExecutor.updateScheduleStatus(scheduleId, statusId);
         schedule();
     }

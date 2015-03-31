@@ -11,17 +11,24 @@ import java.util.List;
 
 public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
+    private static final String EXEC_SELECT_PROTOCOLS = "EXEC dbo.SelectProtocols";
+    private static final String EXEC_SELECT_QUERY_FOR_USER = "EXEC dbo.SelectQueryForUser @uid = ?";
+    private static final String EXEC_CHECK_PASS = "EXEC dbo.CheckPass @lg = ?, @pw = ?";
+    private static final String INSERT_INTO_PROTOCOL = "INSERT INTO dbo.Protocol(name, class, path, xml) VALUES(?,?,?,?)";
+    private static final String EXEC_UPDATE_STATUS_FOR_SCHEDULE = "UPDATE dbo.Schedule SET status_id = ? WHERE id = ?";
+    private static final String EXEC_CHECK_QUERY_EXISTENCE =
+            "EXEC dbo.CheckQueryExistance @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?";
     private final static String SQL_DRIVER_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private final static String SQL_DB_CONNECT_STRING = "jdbc:sqlserver://localhost:1433;";
     private final static String SQL_DB_NAME = "databaseName=HarvestingSchedule";
     private final static String SQL_DB_USER = "QueryLogin";
     private final static String SQL_DB_PASS = "QueryLogin";
-    private static final String EXEC_ACTIVATE_QUERY = "EXEC ActivateQuery @qid = ?, @uid = ?";
-    private static final String EXEC_SELECT_USER = "EXEC SelectUser @lg = ?";
-    private static final String EXEC_ADD_USER = "EXEC AddUser @lg = ?, @pw = ?";
-    private static final String EXEC_CHECK_NEXT_SCHEDULE = "EXEC CheckNextSchedule";
-    private static final String EXEC_SELECT_QUERY_FOR_ID = "EXEC SelectQueryForId @qid = ?";
-    private static final String EXEC_SELECT_PROTOCOL_FOR_ID = "EXEC SelectProtocolForId @pid = ?";
+    private static final String EXEC_ACTIVATE_QUERY = "EXEC dbo.ActivateQuery @qid = ?, @uid = ?";
+    private static final String EXEC_SELECT_USER = "EXEC dbo.SelectUser @lg = ?";
+    private static final String EXEC_ADD_USER = "EXEC dbo.AddUser @lg = ?, @pw = ?";
+    private static final String EXEC_CHECK_NEXT_SCHEDULE = "EXEC dbo.CheckNextSchedule";
+    private static final String EXEC_SELECT_QUERY_FOR_ID = "EXEC dbo.SelectQueryForId @qid = ?";
+    private static final String EXEC_SELECT_PROTOCOL_FOR_ID = "EXEC dbo.SelectProtocolForId @pid = ?";
 
     public StoredProceduresExecutor() throws ClassNotFoundException, SQLException {
         Class.forName(SQL_DRIVER_NAME);
@@ -29,10 +36,11 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
     private Connection getConnection() throws SQLException {
         return DriverManager
-            .getConnection(SQL_DB_CONNECT_STRING + SQL_DB_NAME, SQL_DB_USER, SQL_DB_PASS);
+                .getConnection(SQL_DB_CONNECT_STRING + SQL_DB_NAME, SQL_DB_USER, SQL_DB_PASS);
     }
 
-    @Override public int activateQuery(int qid, int uid) {
+    @Override
+    public int activateQuery(int qid, int uid) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_ACTIVATE_QUERY);
@@ -48,7 +56,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public Boolean selectUser(String login) {
+    @Override
+    public Boolean selectUser(String login) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_USER);
@@ -63,7 +72,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public Boolean addUser(String login, String password) {
+    @Override
+    public Boolean addUser(String login, String password) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_ADD_USER);
@@ -78,7 +88,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public HarvesterTask checkNextHarvest() {
+    @Override
+    public HarvesterTask checkNextHarvest() {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_CHECK_NEXT_SCHEDULE);
@@ -92,7 +103,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
             if (date == null)
                 throw new NullPointerException(
-                    "\"" + EXEC_CHECK_NEXT_SCHEDULE + "\"" + " returned null date.");
+                        "\"" + EXEC_CHECK_NEXT_SCHEDULE + "\"" + " returned null date.");
 
             return new HarvesterTask(date, scheduleId, queryId);
         } catch (Exception e) {
@@ -101,7 +112,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public Query selectQueryForId(int queryId) {
+    @Override
+    public Query selectQueryForId(int queryId) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_QUERY_FOR_ID);
@@ -111,9 +123,9 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
             if (resultSet.next()) {
                 query = new Query(resultSet.getString(1), resultSet.getString(2),
-                    resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
-                    resultSet.getString(6), resultSet.getString(7), resultSet.getString(8),
-                    resultSet.getString(9), resultSet.getString(10), resultSet.getString(11));
+                        resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                        resultSet.getString(6), resultSet.getString(7), resultSet.getString(8),
+                        resultSet.getString(9), resultSet.getString(10), resultSet.getString(11));
             } else {
                 return null;
             }
@@ -125,7 +137,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public Protocol selectProtocolForId(int protocolId) {
+    @Override
+    public Protocol selectProtocolForId(int protocolId) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_PROTOCOL_FOR_ID);
@@ -149,12 +162,13 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public boolean updateScheduleStatus(int scheduleId, int statusId) {
+    @Override
+    public boolean updateScheduleStatus(int scheduleId, int statusId) {
         try (Connection conn = getConnection()) {
             PreparedStatement statement =
-                conn.prepareStatement("EXEC UpdateStatusForSchedule @sid = ?, @status = ?");
-            statement.setInt(1, scheduleId);
-            statement.setInt(2, statusId);
+                    conn.prepareStatement(EXEC_UPDATE_STATUS_FOR_SCHEDULE);
+            statement.setInt(1, statusId);
+            statement.setInt(2, scheduleId);
             int result = statement.executeUpdate();
             if (result <= 0) {
                 throw new Exception("The status update has not updated anything.");
@@ -166,10 +180,11 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public void insertProtocol(Protocol protocol) {
+    @Override
+    public void insertProtocol(Protocol protocol) {
         try (Connection conn = getConnection()) {
             PreparedStatement statement =
-                conn.prepareStatement("INSERT INTO Protocol(name, class, path, xml) VALUES(?,?,?,?)");
+                    conn.prepareStatement(INSERT_INTO_PROTOCOL);
             statement.setString(1, protocol.getName());
             statement.setString(2, protocol.getClass_());
             statement.setString(3, protocol.getPath());
@@ -183,12 +198,13 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public User checkPassword(User userWithoutId) {
+    @Override
+    public User checkPassword(User userWithoutId) {
         try (Connection conn = getConnection()) {
             String login = userWithoutId.getUser();
             String password = userWithoutId.getPassword();
 
-            PreparedStatement statement = conn.prepareStatement("EXEC CheckPass @lg = ?, @pw = ?");
+            PreparedStatement statement = conn.prepareStatement(EXEC_CHECK_PASS);
             statement.setString(1, login);
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
@@ -203,23 +219,24 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public List<Query> getQueriesForUser(User user) {
+    @Override
+    public List<Query> getQueriesForUser(User user) {
         List<Query> list = new ArrayList<>();
         try (Connection conn = getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("EXEC SelectQueryForUser @uid = ?");
+            PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_QUERY_FOR_USER);
             statement.setInt(1, user.getId());
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                Query q = new Query(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),
-                    resultSet.getString(6),resultSet.getString(7),resultSet.getString(8),resultSet.getString(9),resultSet.getString(10),resultSet.getString(11));
+                Query q = new Query(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                        resultSet.getString(6), resultSet.getString(7), resultSet.getString(8), resultSet.getString(9), resultSet.getString(10), resultSet.getString(11));
                 list.add(q);
             } else {
                 return list;
             }
             while (resultSet.next()) {
-                Query q = new Query(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),
-                    resultSet.getString(6),resultSet.getString(7),resultSet.getString(8),resultSet.getString(9),resultSet.getString(10),resultSet.getString(11));
+                Query q = new Query(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                        resultSet.getString(6), resultSet.getString(7), resultSet.getString(8), resultSet.getString(9), resultSet.getString(10), resultSet.getString(11));
                 list.add(q);
             }
             return list;
@@ -230,28 +247,39 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
         }
     }
 
-    @Override public List<Protocol> getProtocols() {
+    @Override
+    public List<Protocol> getProtocols() {
         List<Protocol> list = new ArrayList<>();
         try (Connection conn = getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("EXEC SelectProtocols");
+            PreparedStatement statement = conn.prepareStatement(EXEC_SELECT_PROTOCOLS);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                Protocol protocol = new Protocol(resultSet.getInt(1),resultSet.getString(2));
+                Protocol protocol = new Protocol(resultSet.getInt(1), resultSet.getString(2));
                 list.add(protocol);
             } else {
-                conn.close();
                 return null;
             }
             while (resultSet.next()) {
-                Protocol protocol = new Protocol(resultSet.getInt(1),resultSet.getString(2));
+                Protocol protocol = new Protocol(resultSet.getInt(1), resultSet.getString(2));
                 list.add(protocol);
             }
-
-            conn.close();
             return list;
         } catch (Exception e) {
             e.printStackTrace();
             return list;
+        }
+    }
+
+    @Override
+    public boolean checkQueryExistence(Query query) {
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(EXEC_CHECK_QUERY_EXISTENCE);
+            statement.setString(1, query.getEndURL());
+            statement.setString(2, query.getStartURL());
+            return statement.executeQuery().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

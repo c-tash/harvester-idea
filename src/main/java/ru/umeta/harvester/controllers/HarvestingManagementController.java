@@ -30,15 +30,16 @@ import java.util.Map;
 /**
  * Handles requests for the application home page.
  */
-@Controller public class HarvestingManagementController {
+@Controller
+public class HarvestingManagementController {
 
     private static final Logger logger =
-        LoggerFactory.getLogger(HarvestingManagementController.class);
+            LoggerFactory.getLogger(HarvestingManagementController.class);
     private final Map<Integer, User> userMap = new HashMap<>();
     private final IHarvestingManagementService harvestingManagementService;
 
     public HarvestingManagementController(
-        IHarvestingManagementService harvestingManagementService) {
+            IHarvestingManagementService harvestingManagementService) {
         this.harvestingManagementService = harvestingManagementService;
     }
 
@@ -92,13 +93,14 @@ import java.util.Map;
     //		return "nodes";
     //	}
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET) public String login() {
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login() {
         return "login";
     }
 
     @RequestMapping(value = "/loginsubmit", method = RequestMethod.POST)
     public String loginsubmit(@RequestParam("username") String username,
-        @RequestParam("password") String password, HttpServletResponse response, Model model) {
+                              @RequestParam("password") String password, HttpServletResponse response, Model model) {
         final String hash = getHash(password);
         User user = new User(username, hash, null);
         Integer token = user.hashCode();
@@ -124,14 +126,15 @@ import java.util.Map;
         return "queries";
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.GET) public String register() {
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    public String register() {
 
         return "register";
     }
 
     @RequestMapping(value = "/registersubmit", method = RequestMethod.POST)
     public String registerSubmit(@RequestParam("username") String username,
-        @RequestParam("password") String password, Model model) {
+                                 @RequestParam("password") String password, Model model) {
         String result = harvestingManagementService.register(username, getHash(password));
         model.addAttribute("result", result);
         return "registersubmit";
@@ -147,7 +150,7 @@ import java.util.Map;
         if (!userMap.containsKey(token)) {
             try {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "Unauthorized: Authentication token was either missing or invalid.");
+                        "Unauthorized: Authentication token was either missing or invalid.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -157,18 +160,20 @@ import java.util.Map;
         }
     }
 
-    @RequestMapping(value = "/douploadprotocol", method = RequestMethod.POST) public @ResponseBody
+    @RequestMapping(value = "/douploadprotocol", method = RequestMethod.POST)
+    public
+    @ResponseBody
     String handleFileUpload(HttpServletRequest request, @RequestParam("className") String className,
-        @RequestParam("file") MultipartFile file) {
+                            @RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
         String filePath =
-            request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
+                request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
                 new File(filePath).mkdirs();
                 BufferedOutputStream stream =
-                    new BufferedOutputStream(new FileOutputStream(new File(filePath + name)));
+                        new BufferedOutputStream(new FileOutputStream(new File(filePath + name)));
                 stream.write(bytes);
                 stream.close();
                 harvestingManagementService.addProtocol(name, className, filePath + name);

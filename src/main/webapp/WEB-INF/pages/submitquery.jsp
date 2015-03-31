@@ -14,28 +14,29 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Запрос успешно создан</h2>
-        <div align="left">
-            <form action="/createquery" method="post">
-                <input type="hidden" value="${token}" name="token">
-                <input type="submit" value="Создать еще один запрос">
-            </form>
-        </div>
+<div class="container">
+    <h2>Запрос успешно создан</h2>
 
-        <div align="left">
-            <form action="/queryinfo" method="post">
-                <input type="hidden" value="${token}" name="token">
-                <input type="hidden" value="<%=qid%>" name="qid"><input
-                    type="submit" value="Вернуться к информации о запросе">
-            </form>
-        </div>
+    <div align="left">
+        <form action="/createquery" method="post">
+            <input type="hidden" value="${token}" name="token">
+            <input type="submit" value="Создать еще один запрос">
+        </form>
+    </div>
 
-        <div align="right">
-            <form action="/queries" method="post">
-                <input type="hidden" value="${token}" name="token">
-                <input type="submit" value="Вернуться к просмотру запросов">
-            </form>
+    <div align="left">
+        <form action="/queryinfo" method="post">
+            <input type="hidden" value="${token}" name="token">
+            <input type="hidden" value="<%=qid%>" name="qid"><input
+                type="submit" value="Вернуться к информации о запросе">
+        </form>
+    </div>
+
+    <div align="right">
+        <form action="/queries" method="post">
+            <input type="hidden" value="${token}" name="token">
+            <input type="submit" value="Вернуться к просмотру запросов">
+        </form>
         </td>
     </div>
 </body>

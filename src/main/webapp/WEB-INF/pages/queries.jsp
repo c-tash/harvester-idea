@@ -22,6 +22,7 @@
 <div>
     <div class="table-queries">
         <h2>Просмотр текущих запросов</h2>
+
         <form class="form-horizontal" action="createquery" method="POST">
             <div class="form-group">
                 <input type="hidden" value="${token}" name="token"/>

@@ -11,13 +11,13 @@
     <title>Upload new protocol for Harvester.</title>
 </head>
 <body>
-    <form method="POST" enctype="multipart/form-data" action="/douploadprotocol">
-        File to upload(path to .jar file): <input type="file" name="file">
-        <br />
-        Full reference name (e.g. java.util.ArrayList): <input type="text" name="className">
-        <br />
-        <br />
-        <input type="submit" value="Upload"> Press here to upload the file!
-    </form>
+<form method="POST" enctype="multipart/form-data" action="/douploadprotocol">
+    File to upload(path to .jar file): <input type="file" name="file">
+    <br/>
+    Full reference name (e.g. java.util.ArrayList): <input type="text" name="className">
+    <br/>
+    <br/>
+    <input type="submit" value="Upload"> Press here to upload the file!
+</form>
 </body>
 </html>

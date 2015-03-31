@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by k.kosolapov on 23.03.2015.
  */
-public class User implements Serializable{
+public class User implements Serializable {
 
     private static final long serialVersionUID = 3611320607474857328L;
     private final String user;
@@ -30,15 +30,17 @@ public class User implements Serializable{
         return password;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = result*prime + ((user == null) ? 0 : user.hashCode());
-        result = result*prime + ((password  == null) ? 0 : password.hashCode());
+        result = result * prime + ((user == null) ? 0 : user.hashCode());
+        result = result * prime + ((password == null) ? 0 : password.hashCode());
         return result;
     }
 
-    @Override public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (!(obj instanceof User)) {
             return false;
         }

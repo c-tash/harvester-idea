@@ -11,7 +11,8 @@ public class ModuleLoader extends ClassLoader {
         this.pathtobin = pathtobin;
     }
 
-    @Override public Class findClass(String className) throws ClassNotFoundException {
+    @Override
+    public Class findClass(String className) throws ClassNotFoundException {
         try {
             byte b[] = fetchClassFromFS(pathtobin + className + ".class");
             return defineClass(null, b, 0, b.length);
@@ -40,7 +41,7 @@ public class ModuleLoader extends ClassLoader {
         int offset = 0;
         int numRead = 0;
         while (offset < bytes.length
-            && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+                && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
             offset += numRead;
         }
 

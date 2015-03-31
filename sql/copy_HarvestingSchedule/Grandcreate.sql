@@ -1,4 +1,6 @@
 CREATE DATABASE HarvestingSchedule
+GO
+USE HarvestingSchedule
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Schedule]') AND type in (N'U'))
 DROP TABLE [dbo].[Schedule]
@@ -510,6 +512,7 @@ BEGIN
 		set last_succ = @dt
 		where id = @qid;
 	END;
+
 		
 END;
 
@@ -518,83 +521,15 @@ DROP USER [QueryLogin]
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'QueryLogin')
-CREATE LOGIN [QueryLogin] WITH PASSWORD=N'QueryLogin', DEFAULT_DATABASE=[Protocols], DEFAULT_LANGUAGE=[ðóññêèé], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
+CREATE LOGIN [QueryLogin] WITH PASSWORD=N'QueryLogin', DEFAULT_DATABASE=[HarvestingSchedule], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
 GO
 
-ALTER LOGIN [QueryLogin] DISABLE
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'QueryLogin')
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'QueryLogin')
 CREATE USER [QueryLogin] FOR LOGIN [QueryLogin] WITH DEFAULT_SCHEMA=[dbo]
 GO
 
 GRANT CONNECT TO [QueryLogin]
 GO
-DENY ALTER TO [QueryLogin]
-GO
-DENY BACKUP DATABASE TO [QueryLogin]
-GO
-DENY BACKUP LOG TO [QueryLogin]
-GO
-DENY CREATE DEFAULT TO [QueryLogin]
-GO
-DENY CREATE FUNCTION TO [QueryLogin]
-GO
-DENY CREATE PROCEDURE TO [QueryLogin]
-GO
-DENY CREATE RULE TO [QueryLogin]
-GO
-DENY CREATE TABLE TO [QueryLogin]
-GO
-DENY CREATE VIEW TO [QueryLogin]
-GO
-DENY DELETE TO [QueryLogin]
-GO
-GRANT CONNECT TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[CheckCookie] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[DeleteQuery] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[DeactivateQuery] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[ActivateQuery] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[CheckQueryExistance] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[SelectProtocols] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[CheckProtocol] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[SelectProtocolForId] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[SelectQueryForId] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[UpdateQuery] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[GetProtocolPathForId] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[GetProtocolClassForId] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[UpdateCookie] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[SelectUser] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[AddQuery] TO [QueryLogin]
-GO
-GRANT SELECT ON [dbo].[Schedule] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[AddUser] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[CheckPass] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[SelectQueryForUser] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[CheckScheduleForQuery] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[UpdateCookie] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[UpdateCookie] TO [QueryLogin]
-GO
-GRANT EXECUTE ON [dbo].[CheckNextSchedule] TO [QueryLogin]
-GO
+
+ALTER ROLE [db_owner]
+	ADD MEMBER [QueryLogin]
