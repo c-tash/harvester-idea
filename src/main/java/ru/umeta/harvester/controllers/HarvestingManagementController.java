@@ -141,8 +141,9 @@ public class HarvestingManagementController {
     }
 
     @RequestMapping(value = "/uploadprotocol", method = RequestMethod.POST)
-    public String upload(@RequestParam("token") Integer token, HttpServletResponse response) {
+    public String upload(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
+        model.addAttribute("token", token);
         return "uploadProtocol";
     }
 
@@ -161,10 +162,8 @@ public class HarvestingManagementController {
     }
 
     @RequestMapping(value = "/douploadprotocol", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String handleFileUpload(HttpServletRequest request, @RequestParam("className") String className,
-                            @RequestParam("file") MultipartFile file) {
+    public String handleFileUpload(@RequestParam("token") Integer token, HttpServletRequest request, @RequestParam("className") String className,
+                            @RequestParam("file") MultipartFile file, Model model) {
         String name = file.getOriginalFilename();
         String filePath =
                 request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
@@ -177,15 +176,15 @@ public class HarvestingManagementController {
                 stream.write(bytes);
                 stream.close();
                 harvestingManagementService.addProtocol(name, className, filePath + name);
+                model.addAttribute("uploadProtocolMessage", "You successfully uploaded " + name);
 
-                return "You successfully uploaded " + name;
             } catch (Exception e) {
-                return "You failed to upload " + name + " => " + e.getMessage();
+                model.addAttribute("uploadProtocolMessage", "You failed to upload " + name + " => " + e.getMessage());
             }
         } else {
-            return "You failed to upload " + name + " because the file was empty.";
+            model.addAttribute("uploadProtocolMessage", "You failed to upload " + name + " because the file was empty.");
         }
-
+        return "queries";
     }
 
     @RequestMapping(value = "/createquery", method = RequestMethod.POST)

@@ -26,7 +26,13 @@
         <form class="form-horizontal" action="createquery" method="POST">
             <div class="form-group">
                 <input type="hidden" value="${token}" name="token"/>
-                <button class="btn btn-primary" type="submit" id="btnSignUp">Новый запрос</button>
+                <button class="btn btn-primary" type="submit" id="btnAddQuery">Новый запрос</button>
+            </div>
+        </form>
+        <form class="form-horizontal" action="uploadprotocol" method="POST">
+            <div class="form-group">
+                <input type="hidden" value="${token}" name="token"/>
+                <button class="btn btn-info" type="submit" id="btnAddProtocol">Добавить протокол для харвестинга</button>
             </div>
         </form>
         <table class="table table-condensed">

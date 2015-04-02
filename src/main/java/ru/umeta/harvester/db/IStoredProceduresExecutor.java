@@ -38,5 +38,5 @@ public interface IStoredProceduresExecutor {
 
     List<Protocol> getProtocols();
 
-    boolean checkQueryExistence();
+    boolean checkQueryExistence(Query query);
 }

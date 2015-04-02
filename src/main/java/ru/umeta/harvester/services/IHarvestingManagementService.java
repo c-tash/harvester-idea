@@ -51,6 +51,91 @@ public interface IHarvestingManagementService {
 //        }
 //    }
 //    //
+    //
+    //
+    //    /* (non-Javadoc)
+    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#updateQuery(java.lang.String, java.lang.String, ru.umeta.harvesting.base.model.Query)
+    //     */
+    //    @Override public ServiceMessage updateQuery(String login, String pw, Query qr) {//������� ������
+    //        ServiceMessage msg = new ServiceMessage(-10000, null);
+    //
+    //        IntWrapper uid = new IntWrapper();
+    //
+    //        if (!DBSelectUser.dbConnect(login)) {
+    //            msg.code = 2;
+    //            msg.text = msgArr[msg.code];
+    //            return msg;
+    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
+    //            msg = QueryChecking.isCorrect(qr);
+    //            if (msg.code != 1) {
+    //                msg.text = msgArr[msg.code];
+    //                return msg;
+    //            }
+    //            if (qr == null) {
+    //                msg.code = 3;
+    //                msg.text = msgArr[msg.code];
+    //                return msg;
+    //            }
+    //            if (DBSelectQueryForId.dbConnect(Integer.parseInt(qr.id)) != null) {
+    //                if (DBUpdateQuery
+    //                    .dbConnect(Integer.parseInt(qr.id), qr.name, qr.endURL, qr.startURL,
+    //                        qr.protocol_id, qr.timer, qr.reg, qr.struct_loc)) {
+    //                    msg.code = 1;
+    //                    msg.text = msgArr[msg.code];
+    //                    return msg;
+    //                } else {
+    //                    msg.code = 4;
+    //                    msg.text = msgArr[msg.code];
+    //                    return msg;
+    //                }
+    //            } else {
+    //                msg.code = 5;
+    //                msg.text = msgArr[msg.code];
+    //                return msg;
+    //            }
+    //
+    //
+    //        } else {
+    //            msg.code = 2;
+    //            msg.text = msgArr[msg.code];
+    //            return msg;
+    //        }
+    //
+    //    }
+    //
+    boolean addQuery(Query query, User user);
+
+    /* (non-Javadoc)
+         * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueryInfo(java.lang.String, java.lang.String, int)
+         */
+//    @Override public QueryMessage getQueryInfo(String login, String pw, int qid) {
+//        IntWrapper uid = new IntWrapper();
+//        Query qr = new Query();
+//        QueryMessage msg = new QueryMessage(-10000, null, null);
+//        if (!DBSelectUser.dbConnect(login)) {
+//            msg.code = 2;
+//            msg.text = msgArr[msg.code];
+//            return msg;
+//        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
+//            qr = DBSelectQueryForId.dbConnect(qid);
+//            if (qr == null) {
+//                msg.code = 17;
+//                msg.text = msgArr[msg.code];
+//                return msg;
+//            } else {
+//                msg.queryArray = new Query[1];
+//                msg.queryArray[0] = qr;
+//                msg.code = 1;
+//                msg.text = msgArr[msg.code];
+//                return msg;
+//            }
+//        } else {
+//            msg.code = 2;
+//            msg.text = msgArr[msg.code];
+//            return msg;
+//        }
+//    }
+//    //
 //
 //
 //    /* (non-Javadoc)

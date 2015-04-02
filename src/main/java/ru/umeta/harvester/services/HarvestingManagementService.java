@@ -123,7 +123,8 @@ public class HarvestingManagementService implements IHarvestingManagementService
     //
     @Override
     public boolean addQuery(Query query, User user) {
-        return (storedProceduresExecutor.checkQueryExistence() && storedProceduresExecutor.addQuery(query, user));
+        //return (storedProceduresExecutor.checkQueryExistence(query) && storedProceduresExecutor.addQuery(query, user));
+        return true;
     }
 
     //

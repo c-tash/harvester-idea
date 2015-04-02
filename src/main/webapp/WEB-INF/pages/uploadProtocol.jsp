@@ -17,6 +17,7 @@
     Full reference name (e.g. java.util.ArrayList): <input type="text" name="className">
     <br/>
     <br/>
+    <input type="hidden" value="${token}" name="token">
     <input type="submit" value="Upload"> Press here to upload the file!
 </form>
 </body>
