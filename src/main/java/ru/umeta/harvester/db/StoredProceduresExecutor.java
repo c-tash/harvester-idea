@@ -6,6 +6,8 @@ import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,15 +273,70 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     }
 
     @Override
-    public boolean checkQueryExistence(Query query) {
+    public boolean checkQueryExistence(Query query, User user) {
         try (Connection conn = getConnection()) {
             PreparedStatement statement = conn.prepareStatement(EXEC_CHECK_QUERY_EXISTENCE);
             statement.setString(1, query.getEndURL());
             statement.setString(2, query.getStartURL());
+            statement.setInt(3, Integer.parseInt(query.getProtocol_id()));
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            final String[] ts = query.getTime().split("T");
+            String queryTime = ts[0] + " " + ts[1];
+            statement.setTimestamp(4, new Timestamp(dateFormat.parse(queryTime).getTime()));
+            statement.setInt(5, Integer.parseInt(query.getReg()));
+            statement.setInt(6, user.getId());
+            statement.setString(7, query.getStruct_loc());
             return statement.executeQuery().next();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public Query addQuery(Query query, User user) {
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("EXEC dbo.AddQuery @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?, @name = ? ");
+            final String endURL = query.getEndURL();
+            final String startURL = query.getStartURL();
+            final int protocolId = Integer.parseInt(query.getProtocol_id());
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            final String[] ts = query.getTime().split("T");
+            String queryTime = ts[0] + " " + ts[1];
+            final Timestamp timestamp = new Timestamp(dateFormat.parse(queryTime).getTime());
+            final int reg = Integer.parseInt(query.getReg());
+            final Integer userId = user.getId();
+            final String structLoc = query.getStruct_loc();
+
+            statement.setString(1, endURL);
+            statement.setString(2, startURL);
+            statement.setInt(3, protocolId);
+            statement.setTimestamp(4, timestamp);
+            statement.setInt(5, reg);
+            statement.setInt(6, userId);
+            statement.setString(7, structLoc);
+            statement.setString(8, query.getName());
+            statement.executeUpdate();
+
+            statement = conn.prepareStatement(EXEC_CHECK_QUERY_EXISTENCE);
+            statement.setString(1, endURL);
+            statement.setString(2, startURL);
+            statement.setInt(3, protocolId);
+            statement.setTimestamp(4, timestamp);
+            statement.setInt(5, reg);
+            statement.setInt(6, userId);
+            statement.setString(7, structLoc);
+            final ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                query.setId(resultSet.getString(1));
+                return query;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

@@ -28,14 +28,14 @@
             <label for="inputName" class="col-sm-2 control-label">Имя</label>
 
             <div class="col-sm-10">
-                <form:input type="text" class="form-control" id="inputName" path="name">
+                <form:input type="text" class="form-control" id="inputName" path="name"/>
             </div>
         </div>
         <div class="form-group">
             <label for="inputEndURL" class="col-sm-2 control-label">URL для загрузки</label>
 
             <div class="col-sm-10">
-                <form:input type="url" class="form-control" id="inputEndURL" path="endURL">
+                <form:input type="url" class="form-control" id="inputEndURL" path="endURL"/>
             </div>
         </div>
         <div class="form-group">
@@ -43,24 +43,25 @@
 
             <div class="col-sm-10">
                 <form:input type="url" class="form-control" id="inputStartURL" placeholder="URL для выгрузки"
-                            path="startURL">
+                            path="startURL"/>
             </div>
         </div>
         <div class="form-group">
             <label for="inputProtocol" class="col-sm-2 control-label">Протокол</label>
 
             <div class="col-sm-10">
-                <form:select class="form-control" id="inputProtocol" path="protocol">
-                <c:forEach var="protocol" items="${protocols}">
-                    <option value="${protocol.getId()}">${protocol.getName()}</option>
-                </c:forEach>
+                <form:select class="form-control" id="inputProtocol" path="protocol_id">
+                    <c:forEach var="protocol" items="${protocols}">
+                        <option value="${protocol.getId()}">${protocol.getName()}</option>
+                    </c:forEach>
+                </form:select>
             </div>
         </div>
         <div class="form-group">
             <label for="inputTime" class="col-sm-2 control-label">Время запуска</label>
 
             <div class="col-sm-10">
-                <form:input type="datetime" class="form-control" id="inputTime" path="time"/>
+                <form:input type="datetime-local" class="form-control" id="inputTime" path="time"/>
             </div>
         </div>
         <%--<div class="form-group">--%>
@@ -83,7 +84,7 @@
 
             <div class="col-sm-10">
                 <form:textarea rows="20" class="form-control" id="inputStruct"
-                               path="struct"></form:textarea>
+                               path="struct_loc"></form:textarea>
             </div>
         </div>
         <div class="form-group">

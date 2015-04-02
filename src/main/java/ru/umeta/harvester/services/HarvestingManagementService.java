@@ -122,9 +122,11 @@ public class HarvestingManagementService implements IHarvestingManagementService
     //    }
     //
     @Override
-    public boolean addQuery(Query query, User user) {
-        //return (storedProceduresExecutor.checkQueryExistence(query) && storedProceduresExecutor.addQuery(query, user));
-        return true;
+    public Query addQuery(Query query, User user) {
+        if (!storedProceduresExecutor.checkQueryExistence(query, user)) {
+            return storedProceduresExecutor.addQuery(query, user);
+        }
+        return null;
     }
 
     //

@@ -103,7 +103,7 @@ public interface IHarvestingManagementService {
     //
     //    }
     //
-    boolean addQuery(Query query, User user);
+    Query addQuery(Query query, User user);
 
     /* (non-Javadoc)
          * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueryInfo(java.lang.String, java.lang.String, int)

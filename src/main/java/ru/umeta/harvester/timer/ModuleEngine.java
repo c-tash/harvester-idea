@@ -14,7 +14,7 @@ public class ModuleEngine {
 
     private final static Map<String, URLClassLoader> hashMap = new HashMap<>();
 
-    public static int executeClassMethod(String path, String name) {
+    public static int executeClassMethod(String path, String name, Query query) {
         try {
             if (!hashMap.containsKey(path)) {
                 File file = new File(path);
@@ -25,7 +25,7 @@ public class ModuleEngine {
 
             Class harvesterClass = Class.forName(name, true, hashMap.get(path));
             IHarvester harvesterInstance = (IHarvester) harvesterClass.newInstance();
-            return harvesterInstance.harvest(new Query());
+            return harvesterInstance.harvest(query);
         } catch (Exception e) {
             e.printStackTrace();
         }

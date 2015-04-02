@@ -27,6 +27,11 @@ public class HarvesterTimerService extends HttpServlet implements IHarvesterTime
     }
 
     @Override
+    public Query selectQueryForId(int queryId) {
+        return storedProceduresExecutor.selectQueryForId(queryId);
+    }
+
+    @Override
     public Protocol selectProtocolForQueryId(int queryId) {
         final Query query = storedProceduresExecutor.selectQueryForId(queryId);
         if (query != null && query.getActive().equals("1")) {

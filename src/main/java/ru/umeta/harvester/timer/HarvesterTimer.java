@@ -3,6 +3,7 @@ package ru.umeta.harvester.timer;
 import ru.umeta.harvester.model.HarvesterTask;
 import ru.umeta.harvester.services.IHarvesterTimerService;
 import ru.umeta.harvesting.base.model.Protocol;
+import ru.umeta.harvesting.base.model.Query;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -63,11 +64,11 @@ public enum HarvesterTimer {
                     System.out.print("scheduleId = ");
                     System.out.println(scheduleId);
                     int statusId = 0;
-
+                    final Query query = harvesterTimerService.selectQueryForId(queryId);
                     final Protocol protocol = harvesterTimerService.selectProtocolForQueryId(queryId);
                     if (protocol != null) {
                         try {
-                            statusId = ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_());
+                            statusId = ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_(), query);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
