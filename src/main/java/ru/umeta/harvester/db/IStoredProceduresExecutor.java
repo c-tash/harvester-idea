@@ -46,4 +46,8 @@ public interface IStoredProceduresExecutor {
     Query addQuery(Query query, User user);
 
     List<ScheduleElement> checkScheduleForQuery(User user, Query query);
+
+    boolean updateQuery(Query query, User user);
+
+    boolean deleteQuery(Integer queryId, Integer userId);
 }

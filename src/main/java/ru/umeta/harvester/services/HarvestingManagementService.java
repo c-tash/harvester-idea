@@ -39,89 +39,6 @@ public class HarvestingManagementService implements IHarvestingManagementService
         }
     }
 
-    /* (non-Javadoc)
-     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueryInfo(java.lang.String, java.lang.String, int)
-     */
-//    @Override public QueryMessage getQueryInfo(String login, String pw, int qid) {
-//        IntWrapper uid = new IntWrapper();
-//        Query qr = new Query();
-//        QueryMessage msg = new QueryMessage(-10000, null, null);
-//        if (!DBSelectUser.dbConnect(login)) {
-//            msg.code = 2;
-//            msg.text = msgArr[msg.code];
-//            return msg;
-//        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-//            qr = DBSelectQueryForId.dbConnect(qid);
-//            if (qr == null) {
-//                msg.code = 17;
-//                msg.text = msgArr[msg.code];
-//                return msg;
-//            } else {
-//                msg.queryArray = new Query[1];
-//                msg.queryArray[0] = qr;
-//                msg.code = 1;
-//                msg.text = msgArr[msg.code];
-//                return msg;
-//            }
-//        } else {
-//            msg.code = 2;
-//            msg.text = msgArr[msg.code];
-//            return msg;
-//        }
-//    }
-//    //
-    //
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#updateQuery(java.lang.String, java.lang.String, ru.umeta.harvesting.base.model.Query)
-    //     */
-    //    @Override public ServiceMessage updateQuery(String login, String pw, Query qr) {//������� ������
-    //        ServiceMessage msg = new ServiceMessage(-10000, null);
-    //
-    //        IntWrapper uid = new IntWrapper();
-    //
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            msg = QueryChecking.isCorrect(qr);
-    //            if (msg.code != 1) {
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //            if (qr == null) {
-    //                msg.code = 3;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //            if (DBSelectQueryForId.dbConnect(Integer.parseInt(qr.id)) != null) {
-    //                if (DBUpdateQuery
-    //                    .dbConnect(Integer.parseInt(qr.id), qr.name, qr.endURL, qr.startURL,
-    //                        qr.protocol_id, qr.timer, qr.reg, qr.struct_loc)) {
-    //                    msg.code = 1;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                } else {
-    //                    msg.code = 4;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                }
-    //            } else {
-    //                msg.code = 5;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //
-    //
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
-    //
     @Override
     public Query addQuery(Query query, User user) {
         if (!storedProceduresExecutor.checkQueryExistence(query, user)) {
@@ -130,10 +47,6 @@ public class HarvestingManagementService implements IHarvestingManagementService
         return null;
     }
 
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getQueriesForUser(java.lang.String, java.lang.String)
-    //     */
     @Override
     public List<Query> getQueriesForUser(User user) {
         return storedProceduresExecutor.getQueriesForUser(user);
@@ -143,39 +56,6 @@ public class HarvestingManagementService implements IHarvestingManagementService
     public List<Protocol> getProtocols() {
         return storedProceduresExecutor.getProtocols();
     }
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getFailedAttemptsForQuery(java.lang.String, java.lang.String, int)
-    //     */
-    //    @Override public ScheduleMessage getFailedAttemptsForQuery(String login, String pw, int qid) {
-    //        IntWrapper uid = new IntWrapper();
-    //        ScheduleMessage msg = new ScheduleMessage(-10000, null, null);
-    //        ArrayList<ScheduleElement> arr = new ArrayList<ScheduleElement>();
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //
-    //            arr = DBCheckScheduleForQuery.dbConnect(qid, uid.value);
-    //            if (arr == null) {
-    //                msg.code = 18;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            } else {
-    //                msg.getScheduleArrayFromList(arr);
-    //                msg.code = 1;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //
-    //            }
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
 
     @Override
     public String register(String login, String pw) {
@@ -215,6 +95,16 @@ public class HarvestingManagementService implements IHarvestingManagementService
         } else {
             return storedProceduresExecutor.deactivateQuery(queryId, user.getId());
         }
+    }
+
+    @Override
+    public boolean updateQuery(Query query, User user) {
+        return storedProceduresExecutor.updateQuery(query, user);
+    }
+
+    @Override
+    public boolean deleteQuery(Integer queryId, User user) {
+            return storedProceduresExecutor.deleteQuery(queryId, user.getId());
     }
 
     //    @Override public ServiceMessage deleteQuery(String login, String pw, int qid) {//������� ������

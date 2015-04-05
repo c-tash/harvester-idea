@@ -5,7 +5,7 @@
 <head>
     <style type="text/css">
         .table-queries {
-            max-width: 1024px;
+            max-width: 1600px;
             margin-left: auto;
             margin-right: auto;
             width: 70%;
@@ -21,6 +21,18 @@
 <body>
 <div>
     <div class="table-queries">
+        <h3>
+            <c:if test="${messageColor == 'green'}">
+                <div class="alert alert-success" role="alert">
+                        ${message}
+                </div>
+            </c:if>
+            <c:if test="${messageColor == 'red'}">
+                <div class="alert alert-danger" role="alert">
+                        ${message}
+                </div>
+            </c:if>
+        </h3>
         <h2>Просмотр текущих запросов</h2>
 
         <form class="form-horizontal" action="createquery" method="POST">
@@ -29,9 +41,9 @@
                 <button class="btn btn-primary" type="submit" id="btnAddQuery">Новый запрос</button>
             </div>
         </form>
-        <c:if test="${uploadProtocolMessage}">
+        <c:if test="${message} != null">
             <div>
-                <label>${uploadProtocolMessage}</label>
+                <label>${message}</label>
             </div>
         </c:if>
         <form class="form-horizontal" action="uploadprotocol" method="POST">

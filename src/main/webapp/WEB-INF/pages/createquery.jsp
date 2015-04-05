@@ -23,7 +23,7 @@
 
     <form:form class="form-horizontal" method="post" action="/submitquery" commandName="query">
         <input type="hidden" name="token" value="${token}">
-
+        <form:input path="id" type="hidden"></form:input>
         <div class="form-group">
             <label for="inputName" class="col-sm-2 control-label">Имя</label>
 
@@ -58,19 +58,12 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="inputTime" class="col-sm-2 control-label">Время запуска</label>
+            <label for="inputTime" class="col-sm-2 control-label">Дата и время запуска</label>
 
             <div class="col-sm-10">
                 <form:input type="datetime-local" class="form-control" id="inputTime" path="time"/>
             </div>
         </div>
-        <%--<div class="form-group">--%>
-        <%--<label for="inputDate" class="col-sm-2 control-label">Дата первого запуска</label>--%>
-
-        <%--<div class="col-sm-10">--%>
-        <%--<form:input type="date" class="form-control" id="inputDate" path="date">--%>
-        <%--</div>--%>
-        <%--</div>--%>
         <div class="form-group">
             <label for="inputReg" class="col-sm-2 control-label">Регулярность</label>
 

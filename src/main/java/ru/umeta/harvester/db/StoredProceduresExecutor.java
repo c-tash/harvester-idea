@@ -33,7 +33,8 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     private static final String EXEC_CHECK_NEXT_SCHEDULE = "EXEC dbo.CheckNextSchedule";
     private static final String EXEC_SELECT_QUERY_FOR_ID = "EXEC dbo.SelectQueryForId @qid = ?";
     private static final String EXEC_SELECT_PROTOCOL_FOR_ID = "EXEC dbo.SelectProtocolForId @pid = ?";
-    public static final String EXEC_ADD_QUERY = "EXEC dbo.AddQuery @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?, @name = ? ";
+    private static final String EXEC_ADD_QUERY = "EXEC dbo.AddQuery @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?, @name = ? ";
+    private static final String EXEC_UPDATE_QUERY = "EXEC dbo.UpdateQuery @qid = ?, @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @sloc = ?, @name = ? ";
 
     public StoredProceduresExecutor() throws ClassNotFoundException, SQLException {
         Class.forName(SQL_DRIVER_NAME);
@@ -370,22 +371,73 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             List<ScheduleElement> scheduleList = new ArrayList<>();
 
             if (resultSet.next()) {
-                ScheduleElement element = new ScheduleElement(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4));
+                ScheduleElement element = new ScheduleElement(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4));
                 scheduleList.add(element);
             } else {
-                conn.close();
                 return null;
             }
             while (resultSet.next()) {
-                ScheduleElement element = new ScheduleElement(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4));
+                ScheduleElement element = new ScheduleElement(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4));
                 scheduleList.add(element);
             }
 
-            conn.close();
             return scheduleList;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public boolean updateQuery(Query query, User user) {
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(EXEC_UPDATE_QUERY);
+            final String endURL = query.getEndURL();
+            final String startURL = query.getStartURL();
+            final int protocolId = Integer.parseInt(query.getProtocol_id());
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            final String[] ts = query.getTime().split("T");
+            String queryTime = ts[0] + " " + ts[1];
+            final Timestamp timestamp = new Timestamp(dateFormat.parse(queryTime).getTime());
+            final int reg = Integer.parseInt(query.getReg());
+            final String structLoc = query.getStruct_loc();
+
+            statement.setInt(1, Integer.parseInt(query.getId()));
+            statement.setString(2, endURL);
+            statement.setString(3, startURL);
+            statement.setInt(4, protocolId);
+            statement.setTimestamp(5, timestamp);
+            statement.setInt(6, reg);
+            statement.setString(7, structLoc);
+            statement.setString(8, query.getName());
+            int result = statement.executeUpdate();
+            if (result <= 0) {
+                throw new Exception("The query update has not update anything.");
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteQuery(Integer queryId, Integer userId) {
+        try (Connection conn = getConnection()) {
+
+            final PreparedStatement statement = conn.prepareStatement("EXEC dbo.DeleteQuery @qid = ?, @uid = ?");
+
+            statement.setInt(1, queryId);
+            statement.setInt(2, userId);
+
+            final int result = statement.executeUpdate();
+            if (result <= 0) {
+                throw new Exception("The query delete has not deleted anything.");
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

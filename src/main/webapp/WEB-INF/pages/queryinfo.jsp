@@ -26,18 +26,18 @@
 
 <body>
 <div class="table-query-info">
-    <h2>
-        <c:if test="${changeActiveStatusColor == 'green'}">
+    <h3>
+        <c:if test="${messageColor == 'green'}">
             <div class="alert alert-success" role="alert">
-                ${changeActiveStatus}
+                ${message}
             </div>
         </c:if>
-        <c:if test="${changeActiveStatusColor == 'red'}">
+        <c:if test="${messageColor == 'red'}">
             <div class="alert alert-danger" role="alert">
-                    ${changeActiveStatus}
+                    ${message}
             </div>
         </c:if>
-    </h2>
+    </h3>
     <div>
         <form action="queries" method="POST">
             <div>

@@ -33,17 +33,17 @@ import java.util.Map;
  */
 @Controller
 public class HarvestingManagementController {
-
+    
     private static final Logger logger =
             LoggerFactory.getLogger(HarvestingManagementController.class);
     private final Map<Integer, User> userMap = new HashMap<>();
     private final IHarvestingManagementService harvestingManagementService;
-
+    
     public HarvestingManagementController(
             IHarvestingManagementService harvestingManagementService) {
         this.harvestingManagementService = harvestingManagementService;
     }
-
+    
     private String getHash(String value) {
         try {
             byte[] passwordBites = value.getBytes("UTF-8");
@@ -55,12 +55,12 @@ public class HarvestingManagementController {
             return null;
         }
     }
-
+    
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login() {
         return "login";
     }
-
+    
     @RequestMapping(value = "/loginsubmit", method = RequestMethod.POST)
     public String loginsubmit(@RequestParam("username") String username,
                               @RequestParam("password") String password, HttpServletResponse response, Model model) {
@@ -75,26 +75,26 @@ public class HarvestingManagementController {
                 return register();
             }
         }
-
+        
         return queries(token, response, model);
     }
-
+    
     @RequestMapping(value = "/queries", method = RequestMethod.POST)
     public String queries(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
         final List<Query> queries = harvestingManagementService.getQueriesForUser(user);
-
+        
         model.addAttribute("token", token);
         model.addAttribute("queries", queries);
         return "queries";
     }
-
+    
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String register() {
-
+        
         return "register";
     }
-
+    
     @RequestMapping(value = "/registersubmit", method = RequestMethod.POST)
     public String registerSubmit(@RequestParam("username") String username,
                                  @RequestParam("password") String password, Model model) {
@@ -102,14 +102,14 @@ public class HarvestingManagementController {
         model.addAttribute("result", result);
         return "registersubmit";
     }
-
+    
     @RequestMapping(value = "/uploadprotocol", method = RequestMethod.POST)
     public String upload(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
         model.addAttribute("token", token);
         return "uploadProtocol";
     }
-
+    
     private User getUserFromToken(Integer token, HttpServletResponse response) {
         if (!userMap.containsKey(token)) {
             try {
@@ -123,7 +123,7 @@ public class HarvestingManagementController {
             return userMap.get(token);
         }
     }
-
+    
     @RequestMapping(value = "/douploadprotocol", method = RequestMethod.POST)
     public String handleFileUpload(@RequestParam("token") Integer token, HttpServletRequest request, HttpServletResponse response, @RequestParam("className") String className,
                                    @RequestParam("file") MultipartFile file, Model model) {
@@ -140,17 +140,21 @@ public class HarvestingManagementController {
                 stream.write(bytes);
                 stream.close();
                 harvestingManagementService.addProtocol(name, className, filePath + name);
-                model.addAttribute("uploadProtocolMessage", "You successfully uploaded " + name);
-
+                model.addAttribute("messageColor", "green");
+                model.addAttribute("message", "You successfully uploaded " + name);
             } catch (Exception e) {
-                model.addAttribute("uploadProtocolMessage", "You failed to upload " + name + " => " + e.getMessage());
+                model.addAttribute("messageColor", "red");
+                model.addAttribute("message", "You failed to upload " + name + " => " + e.getMessage());
+                return upload(token, response, model);
             }
         } else {
-            model.addAttribute("uploadProtocolMessage", "You failed to upload " + name + " because the file was empty.");
+            model.addAttribute("messageColor", "red");
+            model.addAttribute("message", "You failed to upload " + name + " because the file was empty.");
+            return upload(token, response, model);
         }
         return queries(token, response, model);
     }
-
+    
     @RequestMapping(value = "/createquery", method = RequestMethod.POST)
     public String createQuery(@RequestParam("token") Integer token, HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
@@ -160,17 +164,21 @@ public class HarvestingManagementController {
         model.addAttribute("protocols", protocols);
         return "createquery";
     }
-
+    
     @RequestMapping(value = "/submitquery", method = RequestMethod.POST)
     public String querySubmit(@ModelAttribute Query query, @RequestParam("token") Integer token,
                               HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
-        query = harvestingManagementService.addQuery(query, user);
+        if (query.getId() != null) {
+            harvestingManagementService.updateQuery(query, user);
+        } else {
+            query = harvestingManagementService.addQuery(query, user);
+        }
         model.addAttribute("token", token);
         model.addAttribute("query", query);
         return "submitquery";
     }
-
+    
     @RequestMapping(value = "/queryinfo", method = RequestMethod.POST)
     public String queryInfo(@RequestParam("token") Integer token, @RequestParam("qid") Integer queryId,
                             Model model, HttpServletResponse response) {
@@ -182,23 +190,45 @@ public class HarvestingManagementController {
         model.addAttribute("query", query);
         return "queryinfo";
     }
-
+    
     @RequestMapping(value = "/changeactive", method = RequestMethod.POST)
     public String changeActive(
             @RequestParam("token") Integer token, @RequestParam("qid") Integer queryId, @RequestParam("active") String active,
             Model model, HttpServletResponse response) {
         final User user = getUserFromToken(token, response);
         if (harvestingManagementService.queryChangeActive(queryId, active, user)) {
-            model.addAttribute("changeActiveStatusColor", "green");
-            model.addAttribute("changeActiveStatus", "Успешно изменено.");
+            model.addAttribute("messageColor", "green");
+            model.addAttribute("message", "Успешно изменено");
         } else {
-            model.addAttribute("changeActiveStatusColor", "red");
-            model.addAttribute("changeActiveStatus", "Произошла ошибка при изменении");
+            model.addAttribute("messageColor", "red");
+            model.addAttribute("message", "Произошла ошибка при изменении");
         }
         return queryInfo(token, queryId, model, response);
     }
-
-
-    //    @RequestMapping(value = "/queries", method = RequestMethod.POST)
-    //    public String nodes(@)
+    
+    @RequestMapping(value = "/updatequery", method = RequestMethod.POST)
+    public String updateQuery(@RequestParam("token") Integer token, @RequestParam("qid") Integer queryId, HttpServletResponse response, Model model) {
+        final User user = getUserFromToken(token, response);
+        final Query query = harvestingManagementService.getQueryForId(queryId);
+        final List<Protocol> protocols = harvestingManagementService.getProtocols();
+        model.addAttribute("query", query);
+        model.addAttribute("token", token);
+        model.addAttribute("protocols", protocols);
+        return "createquery";
+    }
+    
+    @RequestMapping(value = "/deletequery", method = RequestMethod.POST)
+    public String deleteQuery(@RequestParam("token") Integer token, @RequestParam("qid") Integer queryId, HttpServletResponse response, Model model) {
+        final User user = getUserFromToken(token, response);
+        model.addAttribute("token", token);
+        if (harvestingManagementService.deleteQuery(queryId, user)) {
+            model.addAttribute("messageColor", "green");
+            model.addAttribute("message", "Запрос успешно удален");
+            return queries(token, response, model);
+        } else {
+            model.addAttribute("messageColor", "red");
+            model.addAttribute("message", "При удалении произошла ошибка");
+            return queryInfo(token, queryId, model, response);
+        }
+    }
 }
