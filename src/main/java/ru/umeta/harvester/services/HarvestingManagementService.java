@@ -4,6 +4,7 @@ import ru.umeta.harvester.db.IStoredProceduresExecutor;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
+import ru.umeta.harvesting.base.model.ScheduleElement;
 
 import java.util.List;
 //import xml.ErrorMessagesXMLParser;
@@ -195,6 +196,25 @@ public class HarvestingManagementService implements IHarvestingManagementService
             return null;
         }
         return storedProceduresExecutor.checkPassword(userWithoutId);
+    }
+
+    @Override
+    public Query getQueryForId(Integer queryId) {
+        return storedProceduresExecutor.selectQueryForId(queryId);
+    }
+
+    @Override
+    public List<ScheduleElement> getFailedAttemptsForQuery(User user, Query query) {
+        return storedProceduresExecutor.checkScheduleForQuery(user, query);
+    }
+
+    @Override
+    public boolean queryChangeActive(Integer queryId, String active, User user) {
+        if (active.equals("0")) {
+            return storedProceduresExecutor.activateQuery(queryId, user.getId());
+        } else {
+            return storedProceduresExecutor.deactivateQuery(queryId, user.getId());
+        }
     }
 
     //    @Override public ServiceMessage deleteQuery(String login, String pw, int qid) {//������� ������

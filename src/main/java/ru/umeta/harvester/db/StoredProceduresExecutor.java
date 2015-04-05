@@ -4,6 +4,7 @@ import ru.umeta.harvester.model.HarvesterTask;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
+import ru.umeta.harvesting.base.model.ScheduleElement;
 
 import java.sql.*;
 import java.text.DateFormat;
@@ -23,14 +24,16 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     private final static String SQL_DRIVER_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private final static String SQL_DB_CONNECT_STRING = "jdbc:sqlserver://localhost:1433;";
     private final static String SQL_DB_NAME = "databaseName=HarvestingSchedule";
-    private final static String SQL_DB_USER = "QueryLogin";
-    private final static String SQL_DB_PASS = "QueryLogin";
+    private final static String SQL_DB_USER = "sa";
+    private final static String SQL_DB_PASS = "1472";
     private static final String EXEC_ACTIVATE_QUERY = "EXEC dbo.ActivateQuery @qid = ?, @uid = ?";
+    private static final String EXEC_DEACTIVATE_QUERY = "EXEC dbo.DeactivateQuery @qid = ?, @uid = ?";
     private static final String EXEC_SELECT_USER = "EXEC dbo.SelectUser @lg = ?";
     private static final String EXEC_ADD_USER = "EXEC dbo.AddUser @lg = ?, @pw = ?";
     private static final String EXEC_CHECK_NEXT_SCHEDULE = "EXEC dbo.CheckNextSchedule";
     private static final String EXEC_SELECT_QUERY_FOR_ID = "EXEC dbo.SelectQueryForId @qid = ?";
     private static final String EXEC_SELECT_PROTOCOL_FOR_ID = "EXEC dbo.SelectProtocolForId @pid = ?";
+    public static final String EXEC_ADD_QUERY = "EXEC dbo.AddQuery @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?, @name = ? ";
 
     public StoredProceduresExecutor() throws ClassNotFoundException, SQLException {
         Class.forName(SQL_DRIVER_NAME);
@@ -42,7 +45,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     }
 
     @Override
-    public int activateQuery(int qid, int uid) {
+    public boolean activateQuery(int qid, int uid) {
         try (Connection conn = getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(EXEC_ACTIVATE_QUERY);
@@ -50,11 +53,28 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             statement.setInt(2, uid);
             int result = statement.executeUpdate();
 
-            return result == 0 ? 0 : 1;
+            return result > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deactivateQuery(int qid, int uid) {
+        try (Connection conn = getConnection()) {
+
+            PreparedStatement statement = conn.prepareStatement(EXEC_DEACTIVATE_QUERY);
+            statement.setInt(1, qid);
+            statement.setInt(2, uid);
+            int result = statement.executeUpdate();
+
+            return result > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -296,7 +316,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     @Override
     public Query addQuery(Query query, User user) {
         try (Connection conn = getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("EXEC dbo.AddQuery @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?, @name = ? ");
+            PreparedStatement statement = conn.prepareStatement(EXEC_ADD_QUERY);
             final String endURL = query.getEndURL();
             final String startURL = query.getStartURL();
             final int protocolId = Integer.parseInt(query.getProtocol_id());
@@ -339,5 +359,35 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             return null;
         }
     }
+
+    @Override
+    public List<ScheduleElement> checkScheduleForQuery(User user, Query query) {
+        try (Connection conn = getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("EXEC dbo.CheckScheduleForQuery @qid = ?, @uid = ?");
+            statement.setInt(1, Integer.parseInt(query.getId()));
+            statement.setInt(2, user.getId());
+            ResultSet resultSet = statement.executeQuery();
+            List<ScheduleElement> scheduleList = new ArrayList<>();
+
+            if (resultSet.next()) {
+                ScheduleElement element = new ScheduleElement(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4));
+                scheduleList.add(element);
+            } else {
+                conn.close();
+                return null;
+            }
+            while (resultSet.next()) {
+                ScheduleElement element = new ScheduleElement(resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4));
+                scheduleList.add(element);
+            }
+
+            conn.close();
+            return scheduleList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }

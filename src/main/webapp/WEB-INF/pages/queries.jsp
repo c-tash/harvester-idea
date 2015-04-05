@@ -29,6 +29,11 @@
                 <button class="btn btn-primary" type="submit" id="btnAddQuery">Новый запрос</button>
             </div>
         </form>
+        <c:if test="${uploadProtocolMessage}">
+            <div>
+                <label>${uploadProtocolMessage}</label>
+            </div>
+        </c:if>
         <form class="form-horizontal" action="uploadprotocol" method="POST">
             <div class="form-group">
                 <input type="hidden" value="${token}" name="token"/>
@@ -68,7 +73,8 @@
                     <td>${query.getActive()}
                     </td>
                     <td>
-                        <form action="queryinfo">
+                        <form action="queryinfo" method="post">
+                            <input type="hidden" value="${token}" name="token">
                             <input type="hidden" value="${query.getId()}" name="qid">
                             <input type="submit" value="Подробнее">
                         </form>

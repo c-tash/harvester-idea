@@ -4,12 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvester.services.IHarvestingManagementService;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
+import ru.umeta.harvesting.base.model.ScheduleElement;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,44 +55,6 @@ public class HarvestingManagementController {
             return null;
         }
     }
-
-    //	/**
-    //	 * Simply selects the home view to render by returning its name.
-    //	 */
-    //	@RequestMapping(value = "/", method = RequestMethod.GET)
-    //	public String home(Locale locale, Model model) {
-    //		logger.info("Welcome home! The client locale is {}.", locale);
-    //
-    //		Date date = new Date();
-    //		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-    //		String formattedDate = dateFormat.format(date);
-    //
-    //		model.addAttribute("serverTime", formattedDate );
-    //
-    //		return "home";
-    //	}
-    //
-    //	@RequestMapping(value = "/", method = RequestMethod.GET)
-    //	public String home(Model model) {
-    //		return "";
-    //	}
-
-    //	@RequestMapping(value = "/nodes", method = RequestMethod.GET)
-    //	public String nodes(Locale locale, Model model) {
-    //		logger.info("Nodes controller is accessed.");
-    //
-    //		QueryMessage queryMessage = new QueryMessage();
-    //		try {
-    //			queryMessage = harvestingManagementService.getQueriesForUser(user, pw);
-    //		} catch (Exception e) {
-    //
-    //		}
-    //
-    //		if (queryMessage.getText() == null ) {
-    //
-    //		}
-    //		return "nodes";
-    //	}
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login() {
@@ -159,8 +125,9 @@ public class HarvestingManagementController {
     }
 
     @RequestMapping(value = "/douploadprotocol", method = RequestMethod.POST)
-    public String handleFileUpload(@RequestParam("token") Integer token, HttpServletRequest request, @RequestParam("className") String className,
-                            @RequestParam("file") MultipartFile file, Model model) {
+    public String handleFileUpload(@RequestParam("token") Integer token, HttpServletRequest request, HttpServletResponse response, @RequestParam("className") String className,
+                                   @RequestParam("file") MultipartFile file, Model model) {
+        getUserFromToken(token, response);
         String name = file.getOriginalFilename();
         String filePath =
                 request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
@@ -181,7 +148,7 @@ public class HarvestingManagementController {
         } else {
             model.addAttribute("uploadProtocolMessage", "You failed to upload " + name + " because the file was empty.");
         }
-        return "queries";
+        return queries(token, response, model);
     }
 
     @RequestMapping(value = "/createquery", method = RequestMethod.POST)
@@ -195,13 +162,43 @@ public class HarvestingManagementController {
     }
 
     @RequestMapping(value = "/submitquery", method = RequestMethod.POST)
-    public String querySubmit(@ModelAttribute Query query, @RequestParam("token") Integer token, HttpServletResponse response, Model model) {
+    public String querySubmit(@ModelAttribute Query query, @RequestParam("token") Integer token,
+                              HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
         query = harvestingManagementService.addQuery(query, user);
         model.addAttribute("token", token);
         model.addAttribute("query", query);
         return "submitquery";
     }
+
+    @RequestMapping(value = "/queryinfo", method = RequestMethod.POST)
+    public String queryInfo(@RequestParam("token") Integer token, @RequestParam("qid") Integer queryId,
+                            Model model, HttpServletResponse response) {
+        final User user = getUserFromToken(token, response);
+        Query query = harvestingManagementService.getQueryForId(queryId);
+        List<ScheduleElement> scheduleList = harvestingManagementService.getFailedAttemptsForQuery(user, query);
+        model.addAttribute("scheduleList", scheduleList);
+        model.addAttribute("token", token);
+        model.addAttribute("query", query);
+        return "queryinfo";
+    }
+
+    @RequestMapping(value = "/changeactive", method = RequestMethod.POST)
+    public String changeActive(
+            @RequestParam("token") Integer token, @RequestParam("qid") Integer queryId, @RequestParam("active") String active,
+            Model model, HttpServletResponse response) {
+        final User user = getUserFromToken(token, response);
+        if (harvestingManagementService.queryChangeActive(queryId, active, user)) {
+            model.addAttribute("changeActiveStatusColor", "green");
+            model.addAttribute("changeActiveStatus", "Успешно изменено.");
+        } else {
+            model.addAttribute("changeActiveStatusColor", "red");
+            model.addAttribute("changeActiveStatus", "Произошла ошибка при изменении");
+        }
+        return queryInfo(token, queryId, model, response);
+    }
+
+
     //    @RequestMapping(value = "/queries", method = RequestMethod.POST)
     //    public String nodes(@)
 }

@@ -3,6 +3,7 @@ package ru.umeta.harvester.services;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
+import ru.umeta.harvesting.base.model.ScheduleElement;
 
 import java.util.List;
 
@@ -252,6 +253,12 @@ public interface IHarvestingManagementService {
     public String register(String login, String pw);
 
     User login(User userWithoutId);
+
+    Query getQueryForId(Integer queryId);
+
+    List<ScheduleElement> getFailedAttemptsForQuery(User user, Query query);
+
+    boolean queryChangeActive(Integer queryId, String active, User user);
 
     //	public ServiceMessage deleteQuery(String login, String pw, int qid);
     //

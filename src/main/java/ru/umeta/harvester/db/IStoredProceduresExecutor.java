@@ -4,6 +4,7 @@ import ru.umeta.harvester.model.HarvesterTask;
 import ru.umeta.harvester.model.User;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
+import ru.umeta.harvesting.base.model.ScheduleElement;
 
 import java.util.List;
 
@@ -16,7 +17,9 @@ public interface IStoredProceduresExecutor {
      * @param uid User id
      * @return status of the execution
      */
-    int activateQuery(int qid, int uid);
+    boolean activateQuery(int qid, int uid);
+
+    boolean deactivateQuery(int qid, int uid);
 
     Boolean selectUser(String login);
 
@@ -41,4 +44,6 @@ public interface IStoredProceduresExecutor {
     boolean checkQueryExistence(Query query, User user);
 
     Query addQuery(Query query, User user);
+
+    List<ScheduleElement> checkScheduleForQuery(User user, Query query);
 }
