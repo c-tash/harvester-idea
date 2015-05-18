@@ -1,7 +1,5 @@
 package ru.umeta.harvester.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,9 +31,7 @@ import java.util.Map;
  */
 @Controller
 public class HarvestingManagementController {
-    
-    private static final Logger logger =
-            LoggerFactory.getLogger(HarvestingManagementController.class);
+
     private final Map<Integer, User> userMap = new HashMap<>();
     private final IHarvestingManagementService harvestingManagementService;
     

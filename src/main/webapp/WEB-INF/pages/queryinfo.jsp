@@ -64,21 +64,21 @@
         </thead>
         <tbody>
         <tr>
-            <td>${query.getName()}
+            <td>${query.name}
             </td>
-            <td>${query.getEndURL()}
+            <td>${query.endURL}
             </td>
-            <td>${query.getStartURL()}
+            <td>${query.startURL}
             </td>
-            <td>${query.getProtocol_id()}
+            <td>${query.protocol_id}
             </td>
-            <td>${query.getTime()}
+            <td>${query.time}
             </td>
-            <td>${query.getReg()}
+            <td>${query.reg}
             </td>
-            <td>${query.getStruct_loc()}
+            <td>${query.struct_loc}
             </td>
-            <td>${query.getActive()}
+            <td>${query.active}
             </td>
         </tr>
         </tbody>
