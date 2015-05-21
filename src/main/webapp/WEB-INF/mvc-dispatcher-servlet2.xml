@@ -26,6 +26,7 @@
 
     <bean id="harvestingManagementService" class="ru.umeta.harvester.services.HarvestingManagementService">
         <constructor-arg ref="storedProceduresExecutor"/>
+        <constructor-arg ref="harvesterTimerService" />
     </bean>
 
     <bean id="storedProceduresExecutor" class="ru.umeta.harvester.db.StoredProceduresExecutor"/>

@@ -13,9 +13,11 @@ import java.util.List;
 public class HarvestingManagementService implements IHarvestingManagementService {
 
     private final IStoredProceduresExecutor storedProceduresExecutor;
+    private final IHarvesterTimerService harvesterTimerService;
 
-    public HarvestingManagementService(IStoredProceduresExecutor storedProceduresExecutor) {
+    public HarvestingManagementService(IStoredProceduresExecutor storedProceduresExecutor, IHarvesterTimerService harvesterTimerService) {
         this.storedProceduresExecutor = storedProceduresExecutor;
+        this.harvesterTimerService = harvesterTimerService;
     }
 
     private boolean validateString(String arg) {
@@ -42,7 +44,8 @@ public class HarvestingManagementService implements IHarvestingManagementService
     @Override
     public Query addQuery(Query query, User user) {
         if (!storedProceduresExecutor.checkQueryExistence(query, user)) {
-            return storedProceduresExecutor.addQuery(query, user);
+            query = storedProceduresExecutor.addQuery(query, user);
+            harvesterTimerService.schedule();
         }
         return null;
     }
@@ -90,258 +93,31 @@ public class HarvestingManagementService implements IHarvestingManagementService
 
     @Override
     public boolean queryChangeActive(Integer queryId, String active, User user) {
+        final boolean result;
         if (active.equals("0")) {
-            return storedProceduresExecutor.activateQuery(queryId, user.getId());
+            result = storedProceduresExecutor.activateQuery(queryId, user.getId());
+            harvesterTimerService.schedule();
         } else {
-            return storedProceduresExecutor.deactivateQuery(queryId, user.getId());
+            result = storedProceduresExecutor.deactivateQuery(queryId, user.getId());
+            harvesterTimerService.schedule();
         }
+        return result;
     }
 
     @Override
     public boolean updateQuery(Query query, User user) {
-        return storedProceduresExecutor.updateQuery(query, user);
+        final boolean result;
+        result = storedProceduresExecutor.updateQuery(query, user);
+        harvesterTimerService.schedule();
+        return result;
     }
 
     @Override
     public boolean deleteQuery(Integer queryId, User user) {
-            return storedProceduresExecutor.deleteQuery(queryId, user.getId());
+        final boolean result = storedProceduresExecutor.deleteQuery(queryId, user.getId());
+        harvesterTimerService.schedule();
+        return result;
     }
 
-    //    @Override public ServiceMessage deleteQuery(String login, String pw, int qid) {//������� ������
-    //        IntWrapper uid = new IntWrapper();
-    //        ServiceMessage msg = new ServiceMessage(-10000, null);
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            int deleteResult = DBDeleteQuery.dbConnect(qid, uid.value);
-    //            switch (deleteResult) {
-    //                case 1:
-    //                    msg.code = 1;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                case -1:
-    //                    msg.code = 21;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                case 0:
-    //                    msg.code = 22;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                default:
-    //                    msg.code = 0;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //            }
-    //
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
-    //
-    //    @Override public ServiceMessage activateQuery(String login, String pw, int qid) {
-    //
-    //        IntWrapper uid = new IntWrapper();
-    //        ServiceMessage msg = new ServiceMessage(-10000, null);
-    //
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            int deleteResult = DBActivateQuery.dbConnect(qid, uid.value);
-    //            switch (deleteResult) {
-    //                case 1:
-    //                    msg.code = 1;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                case -1:
-    //                    msg.code = 23;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                case 0:
-    //                    msg.code = 22;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                default:
-    //                    msg.code = 0;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //            }
-    //
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#deactivateQuery(java.lang.String, java.lang.String, int)
-    //     */
-    //    @Override public ServiceMessage deactivateQuery(String login, String pw, int qid) {
-    //
-    //        ServiceMessage msg = new ServiceMessage(-10000, null);
-    //        IntWrapper uid = new IntWrapper();
-    //
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            int deleteResult = DBDeactivateQuery.dbConnect(qid, uid.value);
-    //            switch (deleteResult) {
-    //                case 1:
-    //                    msg.code = 1;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                case -1:
-    //                    msg.code = 24;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                case 0:
-    //                    msg.code = 22;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                default:
-    //                    msg.code = 0;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //            }
-    //
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getProtocols(java.lang.String, java.lang.String)
-    //     */
-    //    @Override public ProtocolMessage getProtocols(String login, String pw) {
-    //        IntWrapper uid = new IntWrapper();
-    //        ProtocolMessage msg = new ProtocolMessage();
-    //        ArrayList<Protocol> arr = new ArrayList<Protocol>();
-    //
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //
-    //            arr = DBSelectProtocols.dbConnect();
-    //            if (arr == null) {
-    //                msg.code = 25;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            } else {
-    //                msg.getProtocolArrayFromList(arr);
-    //                msg.code = 1;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getProtocolNameForId(java.lang.String, java.lang.String, int)
-    //     */
-    //    @Override public StringMessage getProtocolNameForId(String login, String pw, int pid) {
-    //        IntWrapper uid = new IntWrapper();
-    //        StringMessage msg = new StringMessage();
-    //        String name = new String();
-    //
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            try {
-    //                if (!DBCheckProtocol.dbConnect(pid)) {
-    //                    msg.code = 12;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                }
-    //            } catch (NumberFormatException e) {
-    //                msg.code = 13;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //
-    //            name = DBSelectProtocolNameForId.dbConnect(pid);
-    //            if (name == null) {
-    //                msg.code = 0;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            } else {
-    //                msg.data = name;
-    //                msg.code = 1;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see ru.umeta.harvesterspring.services.IHarvestingManagementService#getProtocolForId(java.lang.String, java.lang.String, int)
-    //     */
-    //    @Override public ProtocolMessage getProtocolForId(String login, String pw, int pid) {
-    //        IntWrapper uid = new IntWrapper();
-    //        ProtocolMessage msg = new ProtocolMessage();
-    //        Protocol protocol = null;
-    //
-    //        if (!DBSelectUser.dbConnect(login)) {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        } else if (DBCheckPass.dbConnect(login, pw, uid)) {
-    //            try {
-    //                if (!DBCheckProtocol.dbConnect(pid)) {
-    //                    msg.code = 12;
-    //                    msg.text = msgArr[msg.code];
-    //                    return msg;
-    //                }
-    //            } catch (NumberFormatException e) {
-    //                msg.code = 13;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //
-    //            protocol = DBSelectProtocolForId.dbConnect(pid);
-    //            if (protocol == null) {
-    //                msg.code = 0;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            } else {
-    //                msg.protocolArray = new Protocol[1];
-    //                msg.protocolArray[0] = protocol;
-    //                msg.code = 1;
-    //                msg.text = msgArr[msg.code];
-    //                return msg;
-    //            }
-    //        } else {
-    //            msg.code = 2;
-    //            msg.text = msgArr[msg.code];
-    //            return msg;
-    //        }
-    //
-    //    }
 
 }

@@ -39,8 +39,7 @@ public class HarvestingManagementController {
     private final Map<Integer, User> userMap = new HashMap<>();
     private final IHarvestingManagementService harvestingManagementService;
     
-    public HarvestingManagementController(
-            IHarvestingManagementService harvestingManagementService) {
+    public HarvestingManagementController(IHarvestingManagementService harvestingManagementService) {
         this.harvestingManagementService = harvestingManagementService;
     }
     
