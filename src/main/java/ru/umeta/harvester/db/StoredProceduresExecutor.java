@@ -122,7 +122,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
             int queryId = resultSet.getInt("query_id");
             int scheduleId = resultSet.getInt("id");
-            Date date = resultSet.getDate("datetime");
+            Date date = resultSet.getDate("date_time");
 
             if (date == null)
                 throw new NullPointerException(
@@ -170,10 +170,10 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
             Protocol protocol;
 
             if (resultSet.next()) {
-                protocol = new Protocol(protocolId, resultSet.getString(2));
-                protocol.setClass_(resultSet.getString(3));
-                protocol.setPath(resultSet.getString(4));
-                protocol.setXml(resultSet.getString(5));
+                protocol = new Protocol(protocolId, resultSet.getString(1));
+                protocol.setClass_(resultSet.getString(2));
+                protocol.setPath(resultSet.getString(3));
+                protocol.setXml(resultSet.getString(4));
             } else {
                 return null;
             }

@@ -46,7 +46,7 @@
     <script src="${pageContext.request.contextPath}/resources/js/jqBootstrapValidation.js"></script>
 </head>
 <body>
-<form class="form-horizontal" action="/registersubmit" method="post">
+<form class="form-horizontal" action="registersubmit" method="post">
     <div>
         Register a new user.
     </div>

@@ -136,7 +136,7 @@ public class HarvestingManagementController {
                 stream.close();
                 harvestingManagementService.addProtocol(name, className, filePath + name);
                 model.addAttribute("messageColor", "green");
-                model.addAttribute("message", "You successfully uploaded " + name);
+                model.addAttribute("message", "You successfully uploaded " + name + filePath);
             } catch (Exception e) {
                 model.addAttribute("messageColor", "red");
                 model.addAttribute("message", "You failed to upload " + name + " => " + e.getMessage());
@@ -164,7 +164,7 @@ public class HarvestingManagementController {
     public String querySubmit(@ModelAttribute Query query, @RequestParam("token") Integer token,
                               HttpServletResponse response, Model model) {
         final User user = getUserFromToken(token, response);
-        if (query.getId() != null) {
+        if (query.getId() != null && query.getId().length() > 0) {
             harvestingManagementService.updateQuery(query, user);
         } else {
             query = harvestingManagementService.addQuery(query, user);

@@ -172,13 +172,7 @@ CREATE PROCEDURE CheckNextSchedule
     
     
 AS 
-   select query_id, id,
-		datepart(d,date_time) as d,
-		datepart(m,date_time) as mo,
-		datepart(yy,date_time) as y,
-		datepart(hh,date_time) as h,
-		datepart(minute,date_time) as mi,
-		datepart(ss,date_time) as s
+   select query_id, id, date_time
 		from NextHarvest
 GO
 
@@ -533,3 +527,19 @@ GO
 
 ALTER ROLE [db_owner]
 	ADD MEMBER [QueryLogin]
+
+INSERT INTO dbo.Status(id, msg) VALUES(0, 'running')
+INSERT INTO dbo.Status(id, msg) VALUES(1, 'success')
+
+GO
+CREATE VIEW NextHarvest
+	AS
+	SELECT TOP (1) query_id, id, date_time, attempts
+	FROM Schedule
+	WHERE (date_time >= GETDATE() AND status_id = 0)
+	ORDER BY date_time;
+GO
+CREATE VIEW MissedSchedule
+	AS SELECT id, date_time, status_id
+	FROM Schedule
+	WHERE (date_time < DATEADD(mi, - 5, GETDATE())) AND (status_id = 0);	

@@ -18,14 +18,14 @@
     <h2>Запрос успешно создан</h2>
 
     <div align="left">
-        <form action="/createquery" method="post">
+        <form action="createquery" method="post">
             <input type="hidden" value="${token}" name="token">
             <input type="submit" value="Создать еще один запрос">
         </form>
     </div>
 
     <div align="left">
-        <form action="/queryinfo" method="post">
+        <form action="queryinfo" method="post">
             <input type="hidden" value="${token}" name="token">
             <input type="hidden" value="${query.id}" name="qid"><input
                 type="submit" value="Вернуться к информации о запросе">
@@ -33,7 +33,7 @@
     </div>
 
     <div align="right">
-        <form action="/queries" method="post">
+        <form action="queries" method="post">
             <input type="hidden" value="${token}" name="token">
             <input type="submit" value="Вернуться к просмотру запросов">
         </form>
