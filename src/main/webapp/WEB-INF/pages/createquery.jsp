@@ -52,7 +52,7 @@
             <div class="col-sm-10">
                 <form:select class="form-control" id="inputProtocol" path="protocol_id">
                     <c:forEach var="protocol" items="${protocols}">
-                        <option value="${protocol.getId()}">${protocol.getName()}</option>
+                        <option value="${protocol.id}">${protocol.name}</option>
                     </c:forEach>
                 </form:select>
             </div>

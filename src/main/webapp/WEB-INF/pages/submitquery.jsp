@@ -27,7 +27,7 @@
     <div align="left">
         <form action="/queryinfo" method="post">
             <input type="hidden" value="${token}" name="token">
-            <input type="hidden" value="${query.getId()}" name="qid"><input
+            <input type="hidden" value="${query.id}" name="qid"><input
                 type="submit" value="Вернуться к информации о запросе">
         </form>
     </div>

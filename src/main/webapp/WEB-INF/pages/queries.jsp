@@ -68,26 +68,26 @@
             <tbody>
             <c:forEach var="query" items="${queries}">
                 <tr>
-                    <td>${query.getName()}
+                    <td>${query.name}
                     </td>
-                    <td>${query.getEndURL()}
+                    <td>${query.endURL}
                     </td>
-                    <td>${query.getStartURL()}
+                    <td>${query.startURL}
                     </td>
-                    <td>${query.getProtocol_id()}
+                    <td>${query.protocol_id}
                     </td>
-                    <td>${query.getTime()}
+                    <td>${query.time}
                     </td>
-                    <td>${query.getReg()}
+                    <td>${query.reg}
                     </td>
-                    <td>${query.getStruct_loc()}
+                    <td>${query.struct_loc}
                     </td>
-                    <td>${query.getActive()}
+                    <td>${query.active}
                     </td>
                     <td>
                         <form action="queryinfo" method="post">
                             <input type="hidden" value="${token}" name="token">
-                            <input type="hidden" value="${query.getId()}" name="qid">
+                            <input type="hidden" value="${query.id}" name="qid">
                             <input type="submit" value="Подробнее">
                         </form>
                     </td>
