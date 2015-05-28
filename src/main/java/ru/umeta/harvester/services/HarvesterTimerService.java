@@ -6,6 +6,7 @@ import ru.umeta.harvester.timer.HarvesterTimer;
 import ru.umeta.harvesting.base.model.Protocol;
 import ru.umeta.harvesting.base.model.Query;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
@@ -22,6 +23,7 @@ public class HarvesterTimerService extends HttpServlet implements IHarvesterTime
         this.storedProceduresExecutor = storedProceduresExecutor;
     }
 
+    @PostConstruct
     @Override
     public void schedule() {
         HarvesterTimer.INSTANCE.schedule(storedProceduresExecutor.checkNextHarvest(), this);

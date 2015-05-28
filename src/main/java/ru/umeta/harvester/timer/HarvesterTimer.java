@@ -24,26 +24,32 @@ public enum HarvesterTimer {
 
     public synchronized void schedule(HarvesterTask harvesterTask,
                                       IHarvesterTimerService harvesterTimerService) throws NullPointerException {
+        try {
+            if (harvesterTask == null) {
+                System.out.println("There is nothing to harvest");
+                return;
+            }
 
-        if (harvesterTask == null) {
-            System.out.println("There is nothing to harvest");
-            return;
+            if (harvesterTimerTask != null) {
+                if (harvesterTask.getScheduleId() == scheduleId) {
+                    System.out.println("The task already scheduled.");
+                    return;
+                }
+            }
+
+            this.scheduleId = harvesterTask.getScheduleId();
+            this.queryId = harvesterTask.getQueryId();
+
+            final Date date = harvesterTask.getDate();
+
+            harvesterTimerTask = new HarvesterTimerTask(harvesterTimerService);
+            System.out.println("------------------------------------");
+            System.out.println("Next harvesting is planned on " + date.toString());
+            timer.schedule(harvesterTimerTask, date);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        if (harvesterTimerTask != null) {
-            harvesterTimerTask.cancel();
-            timer.purge();
-        }
-
-        this.scheduleId = harvesterTask.getScheduleId();
-        this.queryId = harvesterTask.getQueryId();
-
-        final Date date = harvesterTask.getDate();
-
-        harvesterTimerTask = new HarvesterTimerTask(harvesterTimerService);
-        System.out.println("------------------------------------");
-        System.out.println("Next harvesting is planned on " + date.toString());
-        timer.schedule(harvesterTimerTask, date);
     }
 
     private class HarvesterTimerTask extends TimerTask {
@@ -59,7 +65,7 @@ public enum HarvesterTimer {
                     .println("The delay is " + (System.currentTimeMillis() - scheduledExecutionTime()));
             System.out.println("It's time for harvesting!");
             //Harvester nextHarv = new Harvester(scheduleId, queryId);
-            new Thread() {
+            Thread thread = new Thread() {
                 public void run() {
                     System.out.print("scheduleId = ");
                     System.out.println(scheduleId);
@@ -69,6 +75,9 @@ public enum HarvesterTimer {
                     if (protocol != null) {
                         try {
                             statusId = ModuleEngine.executeClassMethod(protocol.getPath(), protocol.getClass_(), query);
+                            if (statusId > 5) {
+                                statusId = 1;
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -82,7 +91,8 @@ public enum HarvesterTimer {
                     System.out.println(statusId);
                     harvesterTimerService.finishHarvesting(scheduleId, statusId);
                 }
-            }.start();
+            };
+            thread.start();
 
             System.out.println("Debug message. Alarm");
             harvesterTimerService.schedule();

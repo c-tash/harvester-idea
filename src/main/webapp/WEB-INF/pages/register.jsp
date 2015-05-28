@@ -63,7 +63,7 @@
         <label class="control-label">Password</label>
 
         <div class="controls">
-            <input type="text" name="password"/>
+            <input type="password" name="password"/>
 
             <p class="help-block"></p>
         </div>
@@ -73,7 +73,7 @@
 
         <div class="controls">
             <input
-                    type="text"
+                    type="password"
                     data-validation-match-match="password"
                     name="confirm_password"
                     />

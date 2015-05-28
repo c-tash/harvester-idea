@@ -9,10 +9,19 @@ import ru.umeta.harvesting.base.model.ScheduleElement;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class StoredProceduresExecutor implements IStoredProceduresExecutor {
+
+    public static final ResourceBundle PROPERTIES = ResourceBundle.getBundle("application");
+    private final static String SQL_DRIVER_NAME = PROPERTIES.getString("SQL_DRIVER_NAME");
+    private final static String SQL_DB_CONNECT_STRING = PROPERTIES.getString("SQL_DB_CONNECT_STRING");
+    private final static String SQL_DB_NAME = PROPERTIES.getString("SQL_DB_NAME");
+    private final static String SQL_DB_USER = PROPERTIES.getString("SQL_DB_USER");
+    private final static String SQL_DB_PASS = PROPERTIES.getString("SQL_DB_PASS");
 
     private static final String EXEC_SELECT_PROTOCOLS = "EXEC dbo.SelectProtocols";
     private static final String EXEC_SELECT_QUERY_FOR_USER = "EXEC dbo.SelectQueryForUser @uid = ?";
@@ -21,11 +30,6 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
     private static final String EXEC_UPDATE_STATUS_FOR_SCHEDULE = "UPDATE dbo.Schedule SET status_id = ? WHERE id = ?";
     private static final String EXEC_CHECK_QUERY_EXISTENCE =
             "EXEC dbo.CheckQueryExistance @eURL = ?, @sURL = ?, @pid = ?, @time = ?, @reg = ?, @uid = ?, @sloc = ?";
-    private final static String SQL_DRIVER_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private final static String SQL_DB_CONNECT_STRING = "jdbc:sqlserver://localhost:1433;";
-    private final static String SQL_DB_NAME = "databaseName=HarvestingSchedule";
-    private final static String SQL_DB_USER = "sa";
-    private final static String SQL_DB_PASS = "1472";
     private static final String EXEC_ACTIVATE_QUERY = "EXEC dbo.ActivateQuery @qid = ?, @uid = ?";
     private static final String EXEC_DEACTIVATE_QUERY = "EXEC dbo.DeactivateQuery @qid = ?, @uid = ?";
     private static final String EXEC_SELECT_USER = "EXEC dbo.SelectUser @lg = ?";
@@ -122,7 +126,7 @@ public class StoredProceduresExecutor implements IStoredProceduresExecutor {
 
             int queryId = resultSet.getInt("query_id");
             int scheduleId = resultSet.getInt("id");
-            Date date = resultSet.getDate("date_time");
+            Date date = resultSet.getTimestamp("date_time");
 
             if (date == null)
                 throw new NullPointerException(

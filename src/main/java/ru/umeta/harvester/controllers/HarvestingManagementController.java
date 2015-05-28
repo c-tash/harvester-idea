@@ -1,5 +1,6 @@
 package ru.umeta.harvester.controllers;
 
+import net.lingala.zip4j.core.ZipFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,10 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 //import ru.umeta.harvesterspring.services.IHarvestingManagementService;
 
@@ -124,18 +124,27 @@ public class HarvestingManagementController {
                                    @RequestParam("file") MultipartFile file, Model model) {
         getUserFromToken(token, response);
         String name = file.getOriginalFilename();
-        String filePath = "/upload/protocols/";
+        if (!name.endsWith(".zip")) {
+            model.addAttribute("messageColor", "red");
+            model.addAttribute("message", "You failed to upload " + name + " because the file is not a .zip file.");
+        }
+        String fileNameWithoutExt = name.substring(0, name.length() - 4);
+        String folder = ResourceBundle.getBundle("application").getString("PROTOCOL_UPLOAD_FOLDER") + fileNameWithoutExt;
         if (!file.isEmpty()) {
             try {
+                //upload zip
                 byte[] bytes = file.getBytes();
-                new File(filePath).mkdirs();
+                new File(folder).mkdirs();
+                String zipPath = folder + File.separator + name;
                 BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File(filePath + name)));
+                        new BufferedOutputStream(new FileOutputStream(new File(zipPath)));
                 stream.write(bytes);
                 stream.close();
-                harvestingManagementService.addProtocol(name, className, filePath + name);
+                //unpack zip
+                new ZipFile(zipPath).extractAll(folder);
+                harvestingManagementService.addProtocol(name, className, folder + File.separator + fileNameWithoutExt + ".jar");
                 model.addAttribute("messageColor", "green");
-                model.addAttribute("message", "You successfully uploaded " + name + filePath);
+                model.addAttribute("message", "You successfully uploaded " + name + " to " + folder);
             } catch (Exception e) {
                 model.addAttribute("messageColor", "red");
                 model.addAttribute("message", "You failed to upload " + name + " => " + e.getMessage());

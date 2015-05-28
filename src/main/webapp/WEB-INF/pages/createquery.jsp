@@ -21,7 +21,7 @@
 
     <h1>Регистрация запроса</h1>
 
-    <form:form class="form-horizontal" method="post" action="/submitquery" commandName="query">
+    <form:form class="form-horizontal" method="post" action="submitquery" commandName="query">
         <input type="hidden" name="token" value="${token}">
         <form:input path="id" type="hidden"></form:input>
         <div class="form-group">
