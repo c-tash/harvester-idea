@@ -124,8 +124,7 @@ public class HarvestingManagementController {
                                    @RequestParam("file") MultipartFile file, Model model) {
         getUserFromToken(token, response);
         String name = file.getOriginalFilename();
-        String filePath =
-                request.getSession().getServletContext().getRealPath("/") + "upload\\protocols\\";
+        String filePath = "/upload/protocols/";
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
